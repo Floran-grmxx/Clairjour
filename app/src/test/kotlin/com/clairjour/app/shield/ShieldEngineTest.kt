@@ -47,6 +47,18 @@ class ShieldEngineTest {
     }
 
     @Test
+    fun `reel tapped in a story plays until the user swipes`() {
+        engine.onScreen(InstagramScreen(storyViewer = true), allRules - ShieldRule.STORIES)
+        advance()
+        assertTrue(engine.onScreen(reel("alice"), allRules - ShieldRule.STORIES).isEmpty())
+        advance()
+        assertEquals(
+            listOf(ShieldAction.GoBack(ShieldRule.DIRECT_SINGLE_REEL)),
+            engine.onScreen(reel("bob"), allRules - ShieldRule.STORIES)
+        )
+    }
+
+    @Test
     fun `reel key appearing late becomes the reference`() {
         engine.onScreen(directThread, allRules)
         advance()

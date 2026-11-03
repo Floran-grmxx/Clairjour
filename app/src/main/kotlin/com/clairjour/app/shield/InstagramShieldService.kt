@@ -17,7 +17,6 @@ import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import androidx.core.content.ContextCompat
 import com.clairjour.app.BuildConfig
-import com.clairjour.app.ClairjourApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,6 +24,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
+ * Runs in its own ":shield" process (see the manifest): HyperOS kills the app process when the
+ * app is swiped away from recent apps, and would take the shield down with it.
  * Watches Instagram only: every event coming from another app is ignored, except to notice
  * that Instagram left the foreground. Nothing is stored or sent anywhere.
  */
@@ -47,10 +48,11 @@ class InstagramShieldService : AccessibilityService() {
 
     override fun onServiceConnected() {
         super.onServiceConnected()
-        cover = CoverOverlay(this)
-        val repository = (application as ClairjourApplication).container.settingsRepository
+        cover = CoverOverlay(this, onSearchAccounts = ::openSearchBar)
+        val store = ShieldSettingsStore.get(this)
+        scope.launch { store.setSeenRunning(true) }
         scope.launch {
-            repository.shieldSettingsFlow.collect {
+            store.settings.collect {
                 settings = it
                 scheduleEvaluation()
             }
@@ -117,11 +119,17 @@ class InstagramShieldService : AccessibilityService() {
                     root?.let { findByLabel(it, InstagramSelectors.searchAccountsTabLabels) }
                         ?.let(::clickWithAncestors)
                 }
-                is ShieldAction.ShowCover -> runCatching { cover.show(action.bounds) }
+                is ShieldAction.ShowCover -> runCatching { cover.show(action.bounds, action.rule) }
                     .onFailure { Log.w(TAG, "Cover display failed", it) }
                 ShieldAction.HideCover -> cover.hide()
             }
         }
+    }
+
+    /** Cover shortcut: tapping Instagram's search bar replaces the Explore grid with the search screen. */
+    private fun openSearchBar() {
+        val root = rootInActiveWindow ?: return
+        findById(root, listOf(InstagramSelectors.SEARCH_BAR_ID))?.let(::clickWithAncestors)
     }
 
     private fun findById(root: AccessibilityNodeInfo, fragments: List<String>): AccessibilityNodeInfo? =
@@ -205,13 +213,11 @@ class InstagramShieldService : AccessibilityService() {
                         ) == true
                     "rule_on", "rule_off" -> {
                         val rule = ShieldRule.entries.firstOrNull { it.key == argument }
-                        val repository = (application as ClairjourApplication).container.settingsRepository
-                        rule?.let { scope.launch { repository.setShieldRule(it, command == "rule_on") } }
+                        rule?.let { scope.launch { ShieldSettingsStore.get(context).setRule(it, command == "rule_on") } }
                         rule != null
                     }
                     "shield_on", "shield_off" -> {
-                        val repository = (application as ClairjourApplication).container.settingsRepository
-                        scope.launch { repository.setShieldEnabled(command == "shield_on") }
+                        scope.launch { ShieldSettingsStore.get(context).setEnabled(command == "shield_on") }
                         true
                     }
                     else -> false

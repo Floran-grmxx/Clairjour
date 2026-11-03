@@ -7,6 +7,8 @@
     <color name="clairjour_surface_dark">#FF14283F</color>
     <color name="clairjour_on_surface_light">#FF2C2C2C</color>
     <color name="clairjour_on_surface_dark">#FFF5F1E8</color>
+    <color name="shield_cover_background">#FF000000</color>
+    <color name="shield_cover_text">#FFFFFFFF</color>
     <color name="white">#FFFFFFFF</color>
     <color name="black">#FF000000</color>
 </resources>

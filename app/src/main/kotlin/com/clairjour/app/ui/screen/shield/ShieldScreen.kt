@@ -1,5 +1,6 @@
 package com.clairjour.app.ui.screen.shield
 
+import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,16 +24,15 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -47,9 +47,9 @@ import com.clairjour.app.BuildConfig
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
 import com.clairjour.app.shield.ShieldRule
+import com.clairjour.app.shield.ShieldServiceState
 import com.clairjour.app.shield.ShieldServiceStatus
 import com.clairjour.app.ui.components.viewModelFactoryOf
-import kotlinx.coroutines.delay
 
 private val ShieldRule.titleRes: Int
     get() = when (this) {
@@ -84,11 +84,21 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
     val state by vm.state.collectAsState()
     val context = LocalContext.current
     var showDisclosure by remember { mutableStateOf(false) }
+    val refreshStatus = {
+        vm.refreshServiceStatus(
+            ShieldServiceStatus.state(context),
+            ShieldServiceStatus.isIgnoringBatteryOptimizations(context)
+        )
+    }
 
-    // The user enables the service in Android settings: re-check whenever the screen comes back.
+    // The user enables the service in Android settings: re-check whenever the screen comes back,
+    // and live while it is shown (HyperOS can kill the service at any time).
     LifecycleResumeEffect(Unit) {
-        vm.refreshServiceStatus(ShieldServiceStatus.isEnabled(context))
-        onPauseOrDispose { }
+        refreshStatus()
+        val accessibilityManager = context.getSystemService(AccessibilityManager::class.java)
+        val listener = AccessibilityManager.AccessibilityStateChangeListener { refreshStatus() }
+        accessibilityManager?.addAccessibilityStateChangeListener(listener)
+        onPauseOrDispose { accessibilityManager?.removeAccessibilityStateChangeListener(listener) }
     }
 
     if (showDisclosure) {
@@ -99,6 +109,7 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
             confirmButton = {
                 TextButton(onClick = {
                     showDisclosure = false
+                    vm.acceptDisclosure()
                     ShieldServiceStatus.openAccessibilitySettings(context)
                 }) { Text(stringResource(R.string.shield_disclosure_accept)) }
             },
@@ -107,14 +118,6 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
                     Text(stringResource(R.string.shield_disclosure_decline))
                 }
             }
-        )
-    }
-
-    state.pendingDisable?.let { pending ->
-        DelayedDisableDialog(
-            secondsLeft = { vm.secondsBeforeConfirm(pending) },
-            onConfirm = vm::confirmDisable,
-            onDismiss = vm::cancelDisable
         )
     }
 
@@ -141,12 +144,28 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 20.dp, vertical = 12.dp)
         ) {
-            StatusCard(serviceEnabled = state.serviceEnabled, onActivate = { showDisclosure = true })
+            StatusCard(
+                serviceState = state.serviceState,
+                onActivate = {
+                    // The Play Store disclosure is shown once; afterwards the button goes straight to settings.
+                    if (state.settings.disclosureAccepted) ShieldServiceStatus.openAccessibilitySettings(context)
+                    else showDisclosure = true
+                }
+            )
+            Spacer(Modifier.height(16.dp))
+            KeepAliveCard(
+                isXiaomi = ShieldServiceStatus.isXiaomi,
+                batteryUnrestricted = state.batteryUnrestricted,
+                onAutostart = if (ShieldServiceStatus.hasAutostartSettings) {
+                    { ShieldServiceStatus.openAutostartSettings(context) }
+                } else null,
+                onBattery = { ShieldServiceStatus.openBatterySettings(context) }
+            )
             Spacer(Modifier.height(16.dp))
 
             ShieldToggleRow(
                 title = stringResource(R.string.shield_master),
-                body = null,
+                body = stringResource(R.string.shield_master_body),
                 checked = state.settings.enabled,
                 onCheckedChange = vm::onMasterChange
             )
@@ -185,33 +204,89 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
 }
 
 @Composable
-private fun StatusCard(serviceEnabled: Boolean, onActivate: () -> Unit) {
+private fun StatusCard(serviceState: ShieldServiceState, onActivate: () -> Unit) {
+    val running = serviceState == ShieldServiceState.RUNNING
+    val (titleRes, bodyRes) = when (serviceState) {
+        ShieldServiceState.RUNNING -> R.string.shield_status_on to R.string.shield_status_on_body
+        ShieldServiceState.STOPPED_BY_SYSTEM -> R.string.shield_status_stopped to R.string.shield_status_stopped_body
+        ShieldServiceState.OFF -> R.string.shield_status_off to R.string.shield_status_off_body
+    }
     Surface(
         shape = RoundedCornerShape(12.dp),
-        color = if (serviceEnabled) MaterialTheme.colorScheme.primaryContainer
+        color = if (running) MaterialTheme.colorScheme.primaryContainer
         else MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-            Icon(Icons.Outlined.Shield, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Text(
-                    stringResource(if (serviceEnabled) R.string.shield_status_on else R.string.shield_status_off),
-                    style = MaterialTheme.typography.titleMedium
-                )
-                if (!serviceEnabled) {
+        Column(Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Icons.Outlined.Shield, contentDescription = null, tint = MaterialTheme.colorScheme.secondary)
+                Spacer(Modifier.width(12.dp))
+                Text(stringResource(titleRes), style = MaterialTheme.typography.titleMedium)
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(bodyRes),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            if (!running) {
+                Spacer(Modifier.height(12.dp))
+                Button(onClick = onActivate, modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        stringResource(R.string.shield_status_off_body),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        stringResource(
+                            if (serviceState == ShieldServiceState.STOPPED_BY_SYSTEM) R.string.shield_restart
+                            else R.string.shield_activate
+                        )
                     )
                 }
             }
-            if (!serviceEnabled) {
-                Spacer(Modifier.width(8.dp))
-                Button(onClick = onActivate) { Text(stringResource(R.string.shield_activate)) }
+        }
+    }
+}
+
+/** Many phones (Xiaomi first) stop accessibility services in the background unless allowed to run freely. */
+@Composable
+private fun KeepAliveCard(
+    isXiaomi: Boolean,
+    batteryUnrestricted: Boolean,
+    onAutostart: (() -> Unit)?,
+    onBattery: () -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(Modifier.padding(16.dp)) {
+            Text(stringResource(R.string.shield_keep_alive_title), style = MaterialTheme.typography.titleMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(
+                    if (isXiaomi) R.string.shield_keep_alive_body_xiaomi else R.string.shield_keep_alive_body
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(Modifier.height(8.dp))
+            if (onAutostart != null) {
+                OutlinedButton(onClick = onAutostart, modifier = Modifier.fillMaxWidth()) {
+                    Text(stringResource(R.string.shield_keep_alive_autostart))
+                }
             }
+            OutlinedButton(onClick = onBattery, modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    stringResource(
+                        if (batteryUnrestricted) R.string.shield_keep_alive_battery_done
+                        else R.string.shield_keep_alive_battery
+                    )
+                )
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(
+                stringResource(R.string.shield_keep_alive_recents),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }
@@ -242,33 +317,3 @@ private fun ShieldToggleRow(
         Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }
 }
-
-/** Switching a protection off requires waiting, so that the urge has time to pass. */
-@Composable
-private fun DelayedDisableDialog(secondsLeft: () -> Int, onConfirm: () -> Unit, onDismiss: () -> Unit) {
-    var displayedSeconds by remember { mutableIntStateOf(secondsLeft()) }
-    LaunchedEffect(Unit) {
-        while (displayedSeconds > 0) {
-            delay(COUNTDOWN_REFRESH_MILLIS)
-            displayedSeconds = secondsLeft()
-        }
-    }
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.shield_disable_title)) },
-        text = { Text(stringResource(R.string.shield_disable_body)) },
-        confirmButton = {
-            TextButton(onClick = onConfirm, enabled = displayedSeconds == 0) {
-                Text(
-                    if (displayedSeconds > 0) stringResource(R.string.shield_disable_wait, displayedSeconds)
-                    else stringResource(R.string.shield_disable_confirm)
-                )
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) { Text(stringResource(R.string.action_cancel)) }
-        }
-    )
-}
-
-private const val COUNTDOWN_REFRESH_MILLIS = 200L

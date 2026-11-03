@@ -45,7 +45,7 @@ class JournalReminderWorker(
     }
 }
 
-private fun showReminder(context: Context, channelId: String, title: String, body: String, notifId: Int) {
+internal fun showReminder(context: Context, channelId: String, title: String, body: String, notifId: Int) {
     if (!NotificationManagerCompat.from(context).areNotificationsEnabled()) return
 
     val intent = Intent(context, MainActivity::class.java).apply {

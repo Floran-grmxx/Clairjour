@@ -10,7 +10,11 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.clairjour.app.shield.ShieldRule
 import com.clairjour.app.shield.ShieldSettings
+import com.clairjour.app.shield.ShieldSettingsStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
@@ -42,6 +46,7 @@ class SettingsRepository(private val context: Context) {
         val notifJournalMinute = intPreferencesKey("notif_journal_minute")
         val shieldEnabled = booleanPreferencesKey("shield_enabled")
         val shieldDiagnostic = booleanPreferencesKey("shield_diagnostic")
+        val shieldDisclosureAccepted = booleanPreferencesKey("shield_disclosure_accepted")
         fun shieldRule(rule: ShieldRule) = booleanPreferencesKey("shield_rule_${rule.key}")
     }
 
@@ -108,25 +113,40 @@ class SettingsRepository(private val context: Context) {
         }
     }
 
-    val shieldSettingsFlow: Flow<ShieldSettings> = context.dataStore.data.map { preferences ->
-        ShieldSettings(
+    private val shieldStore = ShieldSettingsStore.get(context)
+
+    /**
+     * Shield settings live in their own multi-process store, read by the ":shield" process.
+     * The first read copies the values formerly kept in these app preferences.
+     */
+    val shieldSettingsFlow: Flow<ShieldSettings> = flow {
+        shieldStore.migrateOnce(::legacyShieldSettings)
+        emitAll(shieldStore.settings)
+    }
+
+    private suspend fun legacyShieldSettings(): ShieldSettings? {
+        val preferences = context.dataStore.data.first()
+        val hasLegacyValues = preferences.asMap().keys.any { it.name.startsWith(LEGACY_SHIELD_KEY_PREFIX) }
+        if (!hasLegacyValues) return null
+        return ShieldSettings(
             enabled = preferences[Keys.shieldEnabled] ?: true,
             rules = ShieldRule.entries.filter {
                 preferences[Keys.shieldRule(it)] ?: it.enabledByDefault
             }.toSet(),
-            diagnostic = preferences[Keys.shieldDiagnostic] ?: false
+            diagnostic = preferences[Keys.shieldDiagnostic] ?: false,
+            disclosureAccepted = preferences[Keys.shieldDisclosureAccepted] ?: false
         )
     }
 
-    suspend fun setShieldEnabled(enabled: Boolean) {
-        context.dataStore.edit { it[Keys.shieldEnabled] = enabled }
-    }
+    suspend fun setShieldEnabled(enabled: Boolean) = shieldStore.setEnabled(enabled)
 
-    suspend fun setShieldRule(rule: ShieldRule, enabled: Boolean) {
-        context.dataStore.edit { it[Keys.shieldRule(rule)] = enabled }
-    }
+    suspend fun setShieldRule(rule: ShieldRule, enabled: Boolean) = shieldStore.setRule(rule, enabled)
 
-    suspend fun setShieldDiagnostic(enabled: Boolean) {
-        context.dataStore.edit { it[Keys.shieldDiagnostic] = enabled }
+    suspend fun setShieldDiagnostic(enabled: Boolean) = shieldStore.setDiagnostic(enabled)
+
+    suspend fun setShieldDisclosureAccepted() = shieldStore.setDisclosureAccepted()
+
+    private companion object {
+        const val LEGACY_SHIELD_KEY_PREFIX = "shield_"
     }
 }
