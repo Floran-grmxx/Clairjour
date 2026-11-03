@@ -24,8 +24,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 /**
- * Runs in its own ":shield" process (see the manifest): HyperOS kills the app process when the
- * app is swiped away from recent apps, and would take the shield down with it.
+ * Runs in its own light ":shield" process (see the manifest): no database or UI is loaded there,
+ * so the service does not keep the whole app in memory. Note that HyperOS "clear recent apps"
+ * still kills every process of the app; only the autostart permission lets Android restart it.
  * Watches Instagram only: every event coming from another app is ignored, except to notice
  * that Instagram left the foreground. Nothing is stored or sent anywhere.
  */

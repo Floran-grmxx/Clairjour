@@ -87,7 +87,8 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
     val refreshStatus = {
         vm.refreshServiceStatus(
             ShieldServiceStatus.state(context),
-            ShieldServiceStatus.isIgnoringBatteryOptimizations(context)
+            ShieldServiceStatus.isIgnoringBatteryOptimizations(context),
+            ShieldServiceStatus.isAutostartAllowed(context)
         )
     }
 
@@ -156,6 +157,7 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
             KeepAliveCard(
                 isXiaomi = ShieldServiceStatus.isXiaomi,
                 batteryUnrestricted = state.batteryUnrestricted,
+                autostartAllowed = state.autostartAllowed,
                 onAutostart = if (ShieldServiceStatus.hasAutostartSettings) {
                     { ShieldServiceStatus.openAutostartSettings(context) }
                 } else null,
@@ -227,7 +229,8 @@ private fun StatusCard(serviceState: ShieldServiceState, onActivate: () -> Unit)
             Text(
                 stringResource(bodyRes),
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = if (running) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant
             )
             if (!running) {
                 Spacer(Modifier.height(12.dp))
@@ -249,6 +252,7 @@ private fun StatusCard(serviceState: ShieldServiceState, onActivate: () -> Unit)
 private fun KeepAliveCard(
     isXiaomi: Boolean,
     batteryUnrestricted: Boolean,
+    autostartAllowed: Boolean?,
     onAutostart: (() -> Unit)?,
     onBattery: () -> Unit
 ) {
@@ -269,8 +273,25 @@ private fun KeepAliveCard(
             )
             Spacer(Modifier.height(8.dp))
             if (onAutostart != null) {
-                OutlinedButton(onClick = onAutostart, modifier = Modifier.fillMaxWidth()) {
-                    Text(stringResource(R.string.shield_keep_alive_autostart))
+                if (autostartAllowed == false) {
+                    // The decisive setting: without it the shield never comes back after "clear all".
+                    Button(onClick = onAutostart, modifier = Modifier.fillMaxWidth()) {
+                        Text(stringResource(R.string.shield_keep_alive_autostart))
+                    }
+                    Text(
+                        stringResource(R.string.shield_keep_alive_autostart_missing),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.error
+                    )
+                } else {
+                    OutlinedButton(onClick = onAutostart, modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            stringResource(
+                                if (autostartAllowed == true) R.string.shield_keep_alive_autostart_done
+                                else R.string.shield_keep_alive_autostart
+                            )
+                        )
+                    }
                 }
             }
             OutlinedButton(onClick = onBattery, modifier = Modifier.fillMaxWidth()) {

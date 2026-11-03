@@ -50,7 +50,7 @@ private object StoredShieldSettingsSerializer : Serializer<StoredShieldSettings>
 
 /**
  * Shield settings shared between the app process and the separate ":shield" process that runs
- * the accessibility service (so that HyperOS "clear recent apps" cannot kill it with the app).
+ * the accessibility service.
  * A multi-process DataStore keeps both processes in sync.
  */
 class ShieldSettingsStore private constructor(context: Context) {

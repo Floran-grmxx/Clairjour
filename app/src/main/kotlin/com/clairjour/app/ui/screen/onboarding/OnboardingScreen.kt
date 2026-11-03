@@ -123,9 +123,7 @@ fun OnboardingScreen(
         vm.finish(
             language = language,
             addictionType = type,
-            addictionName = name.ifBlank {
-                type.name.lowercase().replaceFirstChar { it.uppercase() }
-            },
+            addictionName = name.ifBlank { context.getString(type.labelRes) },
             startDate = Instant.fromEpochMilliseconds(startDateMs),
             costPerDay = costPerDay.replace(',', '.').toDoubleOrNull(),
             unitPerDay = unitPerDay.replace(',', '.').toDoubleOrNull(),

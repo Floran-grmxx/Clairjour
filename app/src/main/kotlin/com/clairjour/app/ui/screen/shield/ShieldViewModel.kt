@@ -16,7 +16,9 @@ import kotlinx.coroutines.launch
 data class ShieldUiState(
     val settings: ShieldSettings = ShieldSettings(),
     val serviceState: ShieldServiceState = ShieldServiceState.OFF,
-    val batteryUnrestricted: Boolean = false
+    val batteryUnrestricted: Boolean = false,
+    /** Null when the phone does not expose it (only readable on Xiaomi). */
+    val autostartAllowed: Boolean? = null
 ) {
     val serviceRunning: Boolean get() = serviceState == ShieldServiceState.RUNNING
 }
@@ -25,18 +27,25 @@ class ShieldViewModel(private val settingsRepository: SettingsRepository) : View
 
     private val serviceState = MutableStateFlow(ShieldServiceState.OFF)
     private val batteryUnrestricted = MutableStateFlow(false)
+    private val autostartAllowed = MutableStateFlow<Boolean?>(null)
 
     val state: StateFlow<ShieldUiState> = combine(
         settingsRepository.shieldSettingsFlow,
         serviceState,
-        batteryUnrestricted
-    ) { settings, service, battery ->
-        ShieldUiState(settings, service, battery)
+        batteryUnrestricted,
+        autostartAllowed
+    ) { settings, service, battery, autostart ->
+        ShieldUiState(settings, service, battery, autostart)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), ShieldUiState())
 
-    fun refreshServiceStatus(state: ShieldServiceState, batteryUnrestricted: Boolean) {
+    fun refreshServiceStatus(
+        state: ShieldServiceState,
+        batteryUnrestricted: Boolean,
+        autostartAllowed: Boolean? = null
+    ) {
         serviceState.value = state
         this.batteryUnrestricted.value = batteryUnrestricted
+        this.autostartAllowed.value = autostartAllowed
     }
 
     fun onMasterChange(enabled: Boolean) {

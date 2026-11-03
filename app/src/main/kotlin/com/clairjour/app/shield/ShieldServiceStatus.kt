@@ -1,6 +1,7 @@
 package com.clairjour.app.shield
 
 import android.accessibilityservice.AccessibilityServiceInfo
+import android.app.AppOpsManager
 import android.content.ActivityNotFoundException
 import android.content.ComponentName
 import android.content.Context
@@ -8,6 +9,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.PowerManager
+import android.os.Process
 import android.provider.Settings
 import android.view.accessibility.AccessibilityManager
 
@@ -27,6 +29,7 @@ object ShieldServiceStatus {
 
     private const val ACCESSIBILITY_DETAILS_ACTION = "android.settings.ACCESSIBILITY_DETAILS_SETTINGS"
     private val xiaomiManufacturers = setOf("xiaomi", "redmi", "poco")
+    private const val MIUI_AUTOSTART_OP = 10008
 
     fun state(context: Context): ShieldServiceState {
         val expected = component(context)
@@ -98,6 +101,26 @@ object ShieldServiceStatus {
         val miuiPermissionEditor = Intent("miui.intent.action.APP_PERM_EDITOR")
             .putExtra("extra_pkgname", context.packageName)
         if (!(isXiaomi && start(context, miuiPermissionEditor))) openAppDetails(context)
+    }
+
+    /**
+     * Xiaomi only: whether the MIUI/HyperOS "autostart" permission is granted, read from the
+     * private app op 10008 (the only known way). Null when it cannot be read (other brands).
+     * Without it, the system never restarts the shield once "clear recent apps" killed it.
+     */
+    fun isAutostartAllowed(context: Context): Boolean? {
+        if (!isXiaomi) return null
+        return runCatching {
+            val appOps = context.getSystemService(AppOpsManager::class.java)
+            val checkOp = AppOpsManager::class.java.getMethod(
+                "checkOpNoThrow",
+                Int::class.javaPrimitiveType,
+                Int::class.javaPrimitiveType,
+                String::class.java
+            )
+            val mode = checkOp.invoke(appOps, MIUI_AUTOSTART_OP, Process.myUid(), context.packageName) as Int
+            mode == AppOpsManager.MODE_ALLOWED
+        }.getOrNull()
     }
 
     /** Xiaomi "Battery saver: no restrictions" screen, otherwise the app page (Battery > Unrestricted). */

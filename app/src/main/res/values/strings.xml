@@ -291,6 +291,8 @@
     <string name="shield_keep_alive_body">Some phones close apps in the background to save battery, which stops the shield. Change these settings once:</string>
     <string name="shield_keep_alive_body_xiaomi">On Xiaomi, Redmi and POCO, the system stops the shield to save battery, especially when you close the app from recent apps. Change these settings once:</string>
     <string name="shield_keep_alive_autostart">Allow autostart</string>
+    <string name="shield_keep_alive_autostart_done">Autostart: allowed ✓</string>
+    <string name="shield_keep_alive_autostart_missing">Not allowed: if you close Clairjour from recent apps, your phone stops the shield and never restarts it.</string>
     <string name="shield_keep_alive_battery">Battery: no restrictions</string>
     <string name="shield_keep_alive_battery_done">Battery: no restrictions ✓</string>
     <string name="shield_keep_alive_recents">Tip: in recent apps, long-press Clairjour, then tap the lock. “Clear all” will no longer stop it.</string>

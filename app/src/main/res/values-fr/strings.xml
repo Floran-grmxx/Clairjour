@@ -279,6 +279,8 @@
     <string name="shield_keep_alive_body">Certains téléphones ferment les applis en arrière-plan pour économiser la batterie, ce qui arrête le bouclier. Fais ces réglages une seule fois :</string>
     <string name="shield_keep_alive_body_xiaomi">Sur Xiaomi, Redmi et POCO, le système arrête le bouclier pour économiser la batterie, surtout quand tu fermes l\'appli depuis les récentes. Fais ces réglages une seule fois :</string>
     <string name="shield_keep_alive_autostart">Autoriser le démarrage automatique</string>
+    <string name="shield_keep_alive_autostart_done">Démarrage automatique : autorisé ✓</string>
+    <string name="shield_keep_alive_autostart_missing">Non autorisé : si tu fermes Clairjour depuis les applis récentes, le téléphone arrête le bouclier et ne le relance pas.</string>
     <string name="shield_keep_alive_battery">Batterie : aucune restriction</string>
     <string name="shield_keep_alive_battery_done">Batterie : aucune restriction ✓</string>
     <string name="shield_keep_alive_recents">Astuce : dans les applis récentes, appuie longuement sur Clairjour puis sur le cadenas. « Tout fermer » ne l\'arrêtera plus.</string>
