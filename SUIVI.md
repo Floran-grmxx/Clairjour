@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-03, v1.1.0, versionCode 3) : **Bouclier Instagram v2** — reel touché dans une story autorisé (un seul), nouveau cache Explorer (thème clair/sombre, motivation, bouton « Chercher un compte »), désactivation sans dialogue, statut du service fiable (détecte le service tué par HyperOS) + carte Xiaomi (démarrage auto, batterie) + notification si le bouclier est coupé. Build debug + 58 tests unitaires OK. Bouclier validé sur le Redmi (relancé après fermeture des récentes grâce au démarrage auto) ; release v1.1.0 publiée. Prochaine priorité : usage réel quelques jours, puis Play Store (déclaration Accessibilité).
+**État** (2026-11-06, v1.1.1, versionCode 4) : **Bouclier Instagram v2** — reel touché dans une story autorisé (un seul), nouveau cache Explorer (thème clair/sombre, motivation, bouton « Chercher un compte »), désactivation sans dialogue, statut du service fiable (détecte le service tué par HyperOS) + carte Xiaomi (démarrage auto, batterie) + notification si le bouclier est coupé. Build debug + 58 tests unitaires OK. Bouclier validé sur le Redmi (relancé après fermeture des récentes grâce au démarrage auto) ; release v1.1.0 publiée. Prochaine priorité : usage réel quelques jours, puis Play Store (déclaration Accessibilité).
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
