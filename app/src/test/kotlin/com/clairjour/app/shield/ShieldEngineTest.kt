@@ -59,6 +59,18 @@ class ShieldEngineTest {
     }
 
     @Test
+    fun `reel opened from the liked posts plays until the user swipes`() {
+        engine.onScreen(InstagramScreen(likedPosts = true), allRules)
+        advance()
+        assertTrue(engine.onScreen(reel("alice"), allRules).isEmpty())
+        advance()
+        assertEquals(
+            listOf(ShieldAction.GoBack(ShieldRule.DIRECT_SINGLE_REEL)),
+            engine.onScreen(reel("bob"), allRules)
+        )
+    }
+
+    @Test
     fun `reel key appearing late becomes the reference`() {
         engine.onScreen(directThread, allRules)
         advance()
@@ -79,8 +91,20 @@ class ShieldEngineTest {
     }
 
     @Test
-    fun `reel from the home feed goes back`() {
+    fun `reel from the home feed plays until the user swipes`() {
         engine.onScreen(homeFeed, allRules)
+        advance()
+        assertTrue(engine.onScreen(reel("alice"), allRules).isEmpty())
+        advance()
+        assertEquals(
+            listOf(ShieldAction.GoBack(ShieldRule.DIRECT_SINGLE_REEL)),
+            engine.onScreen(reel("bob"), allRules)
+        )
+    }
+
+    @Test
+    fun `reel from an unknown screen goes back`() {
+        engine.onScreen(InstagramScreen(), allRules)
         advance()
         assertEquals(listOf(ShieldAction.GoBack(ShieldRule.OTHER_REELS)), engine.onScreen(reel("alice"), allRules))
     }
@@ -98,7 +122,7 @@ class ShieldEngineTest {
 
     @Test
     fun `back actions are throttled`() {
-        engine.onScreen(homeFeed, allRules)
+        engine.onScreen(InstagramScreen(), allRules)
         advance()
         assertEquals(1, engine.onScreen(reel("alice"), allRules).size)
         advance(100)

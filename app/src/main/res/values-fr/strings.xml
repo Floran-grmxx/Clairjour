@@ -251,10 +251,10 @@
     <string name="shield_rules_section">Ce que tu bloques</string>
     <string name="shield_rule_reels_tab">Onglet Reels</string>
     <string name="shield_rule_reels_tab_body">Ouvrir l\'onglet Reels te renvoie sur l\'accueil</string>
-    <string name="shield_rule_direct_single_reel">Reels partagés : un seul</string>
-    <string name="shield_rule_direct_single_reel_body">Un reel reçu en message ou touché dans une story se lance ; passer au suivant te fait revenir en arrière</string>
+    <string name="shield_rule_direct_single_reel">Un seul reel à la fois</string>
+    <string name="shield_rule_direct_single_reel_body">Un reel ouvert depuis le fil, un message, une story ou tes « J’aime » se lance (tu peux le mettre en pause) ; passer au suivant te fait revenir en arrière</string>
     <string name="shield_rule_other_reels">Reels ouverts ailleurs</string>
-    <string name="shield_rule_other_reels_body">Depuis le fil, les notifications ou la recherche, le reel se ferme aussitôt</string>
+    <string name="shield_rule_other_reels_body">Depuis les notifications, la recherche ou ailleurs, le reel se ferme aussitôt</string>
     <string name="shield_rule_profile_reels">Reels des profils</string>
     <string name="shield_rule_profile_reels_body">Un reel ouvert depuis un profil se ferme aussitôt</string>
     <string name="shield_rule_explore_grid">Suggestions de la recherche</string>

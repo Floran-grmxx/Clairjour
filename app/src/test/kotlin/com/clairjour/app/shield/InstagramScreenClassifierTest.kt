@@ -15,7 +15,7 @@ class InstagramScreenClassifierTest {
     private fun bottomBar(selected: String): ScreenNode = ScreenNode(
         viewId = "tab_bar",
         bounds = bottomBarBounds,
-        children = listOf("feed_tab", "search_tab", "clips_tab", "profile_tab").map {
+        children = listOf("feed_tab", "search_tab", "clips_tab", "direct_tab", "profile_tab").map {
             ScreenNode(viewId = it, isSelected = it == selected, bounds = bottomBarBounds)
         }
     )
@@ -42,11 +42,54 @@ class InstagramScreenClassifierTest {
     }
 
     @Test
+    fun `feed list counts as the feed while no tab is marked selected`() {
+        val feedList = ScreenNode(viewId = "android:id/list", bounds = NodeBounds(0, 100, 1080, 2250))
+        assertEquals(InstagramSurface.HOME_FEED, InstagramScreenClassifier.classify(root(feedList)).surface)
+
+        // The messages inbox uses the same list id: its selected tab wins.
+        val inbox = InstagramScreenClassifier.classify(root(feedList, bottomBar("direct_tab")))
+        assertEquals(InstagramSurface.DIRECT, inbox.surface)
+    }
+
+    @Test
+    fun `liked posts grid is recognised by its title`() {
+        val title = ScreenNode(viewId = "action_bar_title", text = "J’aime")
+        val screen = InstagramScreenClassifier.classify(root(title))
+        assertTrue(screen.likedPosts)
+        assertEquals(InstagramSurface.LIKED_POSTS, screen.surface)
+
+        val other = InstagramScreenClassifier.classify(root(ScreenNode(viewId = "action_bar_title", text = "Votre activité")))
+        assertFalse(other.likedPosts)
+    }
+
+    @Test
     fun `reel content key changes with the author`() {
         val first = InstagramScreenClassifier.classify(root(reelPager("alice")))
         val second = InstagramScreenClassifier.classify(root(reelPager("bob")))
         assertEquals("alice", first.reelContentKey)
         assertNotEquals(first.reelContentKey, second.reelContentKey)
+    }
+
+    @Test
+    fun `reel key falls back on the video description, never on other labels`() {
+        fun page(vararg labels: String) = root(
+            ScreenNode(
+                viewId = "clips_viewer_view_pager",
+                bounds = screenBounds,
+                children = listOf(ScreenNode(bounds = screenBounds, children = labels.map { ScreenNode(contentDescription = it) }))
+            )
+        )
+        val described = InstagramScreenClassifier.classify(
+            page("Reel de alice. Appuyez deux fois pour lire ou mettre en pause.", "Faites glisser vers le bas")
+        )
+        assertEquals("alice", described.reelContentKey)
+        assertEquals("alice", InstagramScreenClassifier.classify(root(reelPager("alice"))).reelContentKey)
+        assertNull(InstagramScreenClassifier.classify(page("Faites glisser vers le bas")).reelContentKey)
+        // A collaboration lists two authors, its description only the first one: same key.
+        assertEquals("mediapart", InstagramScreenClassifier.classify(root(reelPager("mediapart et anttonrouget"))).reelContentKey)
+        assertEquals("mediapart", InstagramScreenClassifier.classify(page("Reel de mediapart. Appuyez deux fois")).reelContentKey)
+        // Usernames may contain dots: the key must match the author view exactly.
+        assertEquals("flo.ran", InstagramScreenClassifier.classify(page("Reel de flo.ran. Appuyez deux fois")).reelContentKey)
     }
 
     @Test

@@ -16,12 +16,15 @@ object InstagramSelectors {
     const val HOME_TAB_ID = "feed_tab"
     const val SEARCH_TAB_ID = "search_tab"
     const val REELS_TAB_ID = "clips_tab"
+    /** Messages tab: its inbox list has the same id as the home feed list. */
+    const val DIRECT_TAB_ID = "direct_tab"
     const val PROFILE_TAB_ID = "profile_tab"
 
     // Fallback when the tab ids change: content descriptions of the bottom tabs (FR + EN).
     val homeTabLabels = setOf("accueil", "home")
     val searchTabLabels = setOf("rechercher et explorer", "search and explore")
     val reelsTabLabels = setOf("reels")
+    val directTabLabels = setOf("envoyer un message", "messages", "direct")
     val profileTabLabels = setOf("profil", "profile")
 
     /** Bottom tabs are only trusted in the lower part of the screen (ratio of screen height). */
@@ -33,11 +36,18 @@ object InstagramSelectors {
     /** Author name inside a reel page: changes when swiping to the next reel. */
     val reelAuthorIds = setOf("clips_author_username")
 
+    /** Content description of the reel video, holding the author (FR + EN): "Reel de alice." */
+    val reelAuthorDescription = Regex("""^Reel (?:de|by) (\S+?)\.(?:\s|$)""")
+
     /** Stories and highlights player. */
     val storyViewerIds = setOf("reel_viewer_root")
 
     /** Direct message conversation. */
     val directThreadIds = setOf("thread_fragment_container", "row_thread_composer_edittext")
+
+    /** "Your activity > Likes" grid, recognised by its title (FR + EN, compared lowercase). */
+    const val ACTION_BAR_TITLE_ID = "action_bar_title"
+    val likedPostsTitleLabels = setOf("j’aime", "j'aime", "likes")
 
     /** Profile page (own or someone else's). */
     val profileIdFragments = listOf("profile_header_", "row_profile_header")

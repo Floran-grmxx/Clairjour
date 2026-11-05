@@ -70,8 +70,10 @@ class ShieldEngine(private val clock: () -> Long) {
         reelSession = session
 
         return when (session.origin) {
-            // A reel shared in a message or tapped from a story plays; swiping to the next one goes back.
-            InstagramSurface.DIRECT, InstagramSurface.STORY -> {
+            // A reel shared in a message, tapped from a story, opened from the home feed or from the
+            // liked posts plays (so it can be paused); swiping to the next one goes back.
+            InstagramSurface.DIRECT, InstagramSurface.STORY, InstagramSurface.HOME_FEED,
+            InstagramSurface.LIKED_POSTS -> {
                 val swipedToAnotherReel = session.firstContentKey != null &&
                     screen.reelContentKey != null &&
                     screen.reelContentKey != session.firstContentKey

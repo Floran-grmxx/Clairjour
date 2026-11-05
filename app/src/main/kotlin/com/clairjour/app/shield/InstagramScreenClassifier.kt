@@ -2,10 +2,10 @@ package com.clairjour.app.shield
 
 import com.clairjour.app.shield.InstagramSelectors as Selectors
 
-enum class InstagramTab { HOME, SEARCH, REELS, PROFILE }
+enum class InstagramTab { HOME, SEARCH, REELS, DIRECT, PROFILE }
 
 /** Where the user is in Instagram, used to know where a reel was opened from. */
-enum class InstagramSurface { HOME_FEED, SEARCH, REELS_TAB, DIRECT, PROFILE, STORY, OTHER }
+enum class InstagramSurface { HOME_FEED, SEARCH, REELS_TAB, DIRECT, LIKED_POSTS, PROFILE, STORY, OTHER }
 
 /** Tabs displayed after submitting a search ("Accounts", "Reels", "For you"...). */
 data class SearchResultTabs(val accountsSelected: Boolean)
@@ -18,6 +18,8 @@ data class InstagramScreen(
     val reelContentKey: String? = null,
     val storyViewer: Boolean = false,
     val directThread: Boolean = false,
+    /** "Your activity > Likes" grid. */
+    val likedPosts: Boolean = false,
     val profile: Boolean = false,
     val exploreGridBounds: NodeBounds? = null,
     /** Home feed area below the stories tray. */
@@ -29,10 +31,14 @@ data class InstagramScreen(
             reelViewer && selectedTab == InstagramTab.REELS -> InstagramSurface.REELS_TAB
             storyViewer -> InstagramSurface.STORY
             directThread -> InstagramSurface.DIRECT
+            likedPosts -> InstagramSurface.LIKED_POSTS
             profile -> InstagramSurface.PROFILE
             selectedTab == InstagramTab.HOME -> InstagramSurface.HOME_FEED
             selectedTab == InstagramTab.SEARCH -> InstagramSurface.SEARCH
+            selectedTab == InstagramTab.DIRECT -> InstagramSurface.DIRECT
             selectedTab == InstagramTab.PROFILE -> InstagramSurface.PROFILE
+            // Instagram briefly marks no tab as selected when the feed comes back: the feed list is enough.
+            selectedTab == null && homeFeedBounds != null -> InstagramSurface.HOME_FEED
             else -> InstagramSurface.OTHER
         }
 }
@@ -40,7 +46,6 @@ data class InstagramScreen(
 object InstagramScreenClassifier {
 
     private const val SAME_ROW_TOLERANCE_PIXELS = 60
-    private const val REEL_KEY_MAX_LABELS = 3
 
     fun classify(root: ScreenNode): InstagramScreen {
         val nodes = root.walk().toList()
@@ -52,6 +57,10 @@ object InstagramScreenClassifier {
             reelContentKey = reelViewerNode?.let { reelContentKey(it) },
             storyViewer = nodes.any { Selectors.matchesAny(it.viewId, Selectors.storyViewerIds) },
             directThread = nodes.any { Selectors.matchesAny(it.viewId, Selectors.directThreadIds) },
+            likedPosts = nodes.any {
+                it.viewId == Selectors.ACTION_BAR_TITLE_ID &&
+                    it.label?.lowercase()?.trim() in Selectors.likedPostsTitleLabels
+            },
             profile = nodes.any { Selectors.containsAny(it.viewId, Selectors.profileIdFragments) },
             exploreGridBounds = exploreGridBounds(nodes),
             homeFeedBounds = homeFeedBounds(nodes),
@@ -64,6 +73,7 @@ object InstagramScreenClassifier {
             InstagramTab.HOME to Selectors.HOME_TAB_ID,
             InstagramTab.SEARCH to Selectors.SEARCH_TAB_ID,
             InstagramTab.REELS to Selectors.REELS_TAB_ID,
+            InstagramTab.DIRECT to Selectors.DIRECT_TAB_ID,
             InstagramTab.PROFILE to Selectors.PROFILE_TAB_ID
         )
         val bottomBarMinTop = root.bounds.top + (root.bounds.height * Selectors.BOTTOM_BAR_MIN_TOP_RATIO).toInt()
@@ -71,6 +81,7 @@ object InstagramScreenClassifier {
             InstagramTab.HOME to Selectors.homeTabLabels,
             InstagramTab.SEARCH to Selectors.searchTabLabels,
             InstagramTab.REELS to Selectors.reelsTabLabels,
+            InstagramTab.DIRECT to Selectors.directTabLabels,
             InstagramTab.PROFILE to Selectors.profileTabLabels
         )
         for ((node, selected) in root.walkWithSelection()) {
@@ -86,22 +97,25 @@ object InstagramScreenClassifier {
         return null
     }
 
+    /**
+     * Author of the visible reel. Only the author is used: other labels on the page (captions,
+     * "double tap to pause" hints) appear and disappear and would look like a swipe.
+     */
     private fun reelContentKey(pager: ScreenNode): String? {
         // The visible page is the largest child of the pager.
         val page = pager.children.maxByOrNull { it.bounds.height.coerceAtLeast(0) } ?: pager
-        val authorLabels = page.walk()
+        // Collaborations show "alice et bob" while the description only names "alice":
+        // keep the first username (usernames never contain spaces) so both sources agree.
+        page.walk()
             .filter { Selectors.matchesAny(it.viewId, Selectors.reelAuthorIds) }
-            .mapNotNull { it.label?.trim() }
-            .filter { it.isNotEmpty() }
-            .toList()
-        val labels = authorLabels.ifEmpty {
-            page.walk()
-                .mapNotNull { it.label?.trim() }
-                .filter { it.length >= 3 && it.any(Char::isLetter) }
-                .take(REEL_KEY_MAX_LABELS)
-                .toList()
-        }
-        return labels.takeIf { it.isNotEmpty() }?.joinToString("|")
+            .mapNotNull { it.label?.trim()?.substringBefore(' ') }
+            .firstOrNull { it.isNotEmpty() }
+            ?.let { return it }
+        // Fallback when the author view is momentarily missing: "Reel de alice. Appuyez…".
+        return page.walk()
+            .mapNotNull { node -> node.label?.let { Selectors.reelAuthorDescription.find(it) } }
+            .firstOrNull()
+            ?.groupValues?.get(1)
     }
 
     private fun exploreGridBounds(nodes: List<ScreenNode>): NodeBounds? {

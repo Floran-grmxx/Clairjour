@@ -7,10 +7,10 @@ enum class ShieldRule(val key: String, val enabledByDefault: Boolean) {
     /** Opening the Reels tab sends the user back to the home tab. */
     REELS_TAB("reels_tab", true),
 
-    /** A reel received in a conversation or opened from a story plays, swiping to the next one goes back. */
+    /** A reel opened from a conversation, a story, the home feed or the liked posts plays; swiping to the next one goes back. */
     DIRECT_SINGLE_REEL("direct_single_reel", true),
 
-    /** Reels opened from the home feed, notifications or anywhere else go back. */
+    /** Reels opened from notifications, search or anywhere else go back. */
     OTHER_REELS("other_reels", true),
 
     /** Reels opened from a profile go back. */

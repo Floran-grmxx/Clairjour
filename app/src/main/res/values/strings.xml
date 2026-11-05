@@ -263,10 +263,10 @@
     <string name="shield_rules_section">What you block</string>
     <string name="shield_rule_reels_tab">Reels tab</string>
     <string name="shield_rule_reels_tab_body">Opening the Reels tab sends you back to the home tab</string>
-    <string name="shield_rule_direct_single_reel">Shared reels: one only</string>
-    <string name="shield_rule_direct_single_reel_body">A reel received in a message or tapped in a story plays; swiping to the next one takes you back</string>
+    <string name="shield_rule_direct_single_reel">One reel at a time</string>
+    <string name="shield_rule_direct_single_reel_body">A reel opened from the feed, a message, a story or your likes plays (you can pause it); swiping to the next one takes you back</string>
     <string name="shield_rule_other_reels">Reels opened elsewhere</string>
-    <string name="shield_rule_other_reels_body">From the feed, notifications or search, the reel closes right away</string>
+    <string name="shield_rule_other_reels_body">From notifications, search or elsewhere, the reel closes right away</string>
     <string name="shield_rule_profile_reels">Reels from profiles</string>
     <string name="shield_rule_profile_reels_body">A reel opened from a profile closes right away</string>
     <string name="shield_rule_explore_grid">Search suggestions</string>
