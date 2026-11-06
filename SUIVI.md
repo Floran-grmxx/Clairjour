@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R4 fait (Stats : calendrier + frise de jalons). Prochaine priorité : **R5 Journal**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R1→R5 faits (APK 13,2 Mo, thème, Accueil, Stats, Journal). Prochaine priorité : **R6 Bouclier réordonné**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -77,7 +77,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R2** (2026-11-06) Thème : `surfaceContainer*` définis en clair (ivoire) et sombre (bleu nuit), pastille de la barre du bas = `surfaceVariant` + icône `primary`, `ClairjourSwitch` commun (éteint neutre) sur les 4 écrans. Vérifié sur émulateur clair + sombre
 - [x] **R3** (2026-11-06) Accueil : compteur « + X h YY min » rafraîchi au début de chaque minute (au lieu de chaque seconde), barre de jalon continue (`gapSize = 0.dp`, sans point final) + pourcentage localisé. Bugs corrigés au passage : bouton « Respire » caché sous la barre du bas (padding de la barre appliqué au `Scaffold` de l'Accueil), état vide « Que veux-tu suivre ? » affiché pendant le chargement de la base (`state.loading` ignoré), « dans 1 jours » → plurals `home_next_milestone`. Vérifié sur émulateur
 - [x] **R4** (2026-11-06) Stats : cartes Série (+ record) et Économisé (+ par jour), frise de jalons défilante (atteints ✓, prochain avec jours restants, ouverte sur le prochain), calendrier mensuel ‹ › (`domain/SobrietyCalendar.kt`, 6 tests), humeur + moyennes dans une carte, déclencheurs dans une carte. Vérifié sur émulateur (47 j, 517 €, nov./oct.)
-- [ ] **R5** Journal : recherche texte, puces filtres, regroupement par semaine, bande couleur humeur
+- [x] **R5** (2026-11-06) Journal : recherche en mémoire insensible à la casse et aux accents (`domain/JournalBrowsing.kt`, la recherche SQL `LIKE` supprimée), entrées regroupées par semaine (« Cette semaine », « Semaine dernière », « Semaine du … »), bande de couleur d'humeur (rouge/doré/vert sauge) + déclencheurs sur la carte, barre de recherche arrondie avec effacement. Bugs corrigés : bouton « + » sous la barre du bas (même cause que l'Accueil), fond rouge + poubelle visible à travers les cartes au repos (dessiné seulement pendant le glissement). 6 nouveaux tests (75 au total)
 - [ ] **R6** Bouclier : interrupteurs en premier, carte « Fiabilité » repliée quand tout est réglé
 - [ ] **R7** Pastille rouge sur l'onglet Paramètres si le Bouclier est coupé par le système
 - [ ] **R8** Vérif Redmi + captures + release v1.2.0 (versionCode 5)
@@ -92,6 +92,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **v0.3 features possibles** : auto-backup WorkManager (nécessite décision sur stockage passphrase), Vico 2.0.0 stable dès sortie, remontée des raisons perso sur HomeScreen
 
 ## 📋 Notes / gotchas
+- **`SwipeToDismissBox` + carte translucide** : le `backgroundContent` se voit à travers la carte au repos → ne le dessiner que si `dismissState.dismissDirection == EndToStart`.
+- **`adb shell input text`** : bloque ou sort de l'app avec certains caractères (virgule, apostrophe) → texte ASCII simple, espaces en `%s`, et `timeout` autour de chaque commande adb.
 - **Écran imbriqué avec son propre `Scaffold`** (Accueil) : le padding de la barre du bas (`contentPadding`) doit aller sur le `Scaffold` lui-même, sinon FAB et snackbar sont dessinés sous la barre.
 - **Ouverture SQLCipher ~15 s sur l'émulateur** (traduction ARM, APK sans x86) : normal en émulateur, à chronométrer sur le Redmi en R8.
 - **Émulateur + abiFilters ARM** : l'émulateur Pixel_7 (x86_64) lance quand même l'app grâce à la traduction ARM (abilist `x86_64,arm64-v8a`), premier démarrage lent (splash quelques secondes).

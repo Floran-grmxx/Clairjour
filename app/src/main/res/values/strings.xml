@@ -81,6 +81,10 @@
     <string name="journal_gratitude">Grateful for</string>
     <string name="journal_cravings">Had cravings today</string>
     <string name="journal_search">Search</string>
+    <string name="journal_week_current">This week</string>
+    <string name="journal_week_previous">Last week</string>
+    <string name="journal_week_of">Week of %1$s</string>
+    <string name="cd_clear_search">Clear search</string>
 
     <!-- Stats -->
     <string name="stats_title">Statistics</string>

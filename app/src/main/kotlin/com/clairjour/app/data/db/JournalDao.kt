@@ -21,9 +21,6 @@ interface JournalDao {
     @Query("SELECT * FROM journal_entries WHERE date = :date LIMIT 1")
     suspend fun getByDate(date: LocalDate): JournalEntryEntity?
 
-    @Query("SELECT * FROM journal_entries WHERE notes LIKE '%' || :query || '%' ESCAPE '\\' OR gratitude LIKE '%' || :query || '%' ESCAPE '\\' ORDER BY date DESC")
-    fun search(query: String): Flow<List<JournalEntryEntity>>
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsert(entity: JournalEntryEntity)
 

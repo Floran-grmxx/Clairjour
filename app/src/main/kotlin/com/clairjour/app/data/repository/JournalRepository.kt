@@ -17,11 +17,6 @@ class JournalRepository(private val dao: JournalDao) {
 
     fun observeByDate(date: LocalDate): Flow<JournalEntryEntity?> = dao.observeByDate(date)
 
-    fun search(query: String): Flow<List<JournalEntryEntity>> {
-        val escaped = query.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_")
-        return dao.search(escaped)
-    }
-
     suspend fun upsert(
         date: LocalDate,
         mood: Int,

@@ -55,9 +55,27 @@ class JournalViewModelTest {
         vm.setMoodFilter(3); vm.setCravingsOnly(true)
 
         val state = vm.uiState.first { it.moodFilter == 3 && it.cravingsOnly }
-        assertEquals(1, state.entries.size)
-        assertEquals(3, state.entries[0].mood)
-        assertTrue(state.entries[0].hadCravings)
+        val entries = state.weeks.flatMap { it.entries }
+        assertEquals(1, entries.size)
+        assertEquals(3, entries[0].mood)
+        assertTrue(entries[0].hadCravings)
+    }
+
+    @Test
+    fun `search ignores accents and keeps filters`() = runTest(dispatcher) {
+        val repo: JournalRepository = mockk()
+        every { repo.observeAll() } returns MutableStateFlow(
+            listOf(
+                entry("a", 3, false).copy(notes = "Soirée calme"),
+                entry("b", 3, false).copy(notes = "Stress au travail")
+            )
+        )
+
+        val vm = JournalViewModel(repo)
+        vm.setQuery("soiree")
+
+        val state = vm.uiState.first { it.query == "soiree" }
+        assertEquals(listOf("e-a"), state.weeks.flatMap { it.entries }.map { it.id })
     }
 
     @Test

@@ -17,7 +17,6 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -55,6 +54,20 @@ import com.clairjour.app.data.db.JournalEntryEntity
 import com.clairjour.app.domain.Formatters
 import com.clairjour.app.ui.components.viewModelFactoryOf
 import kotlinx.datetime.LocalDate
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.IconButton
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringArrayResource
+import com.clairjour.app.domain.JournalBrowsing
+import com.clairjour.app.ui.theme.ClairjourSage
+import java.time.format.DateTimeFormatter
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun JournalScreen(
@@ -68,7 +81,9 @@ fun JournalScreen(
     val state by vm.uiState.collectAsState()
     var pendingDeleteId by remember { mutableStateOf<String?>(null) }
 
+    // The app's bottom bar padding goes on the Scaffold so the add button sits above it.
     Scaffold(
+        modifier = Modifier.padding(contentPadding),
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { onOpenEditor(null) },
@@ -86,7 +101,6 @@ fun JournalScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding)
                 .padding(padding)
         ) {
             Column(Modifier.padding(horizontal = 20.dp, vertical = 12.dp)) {
@@ -96,6 +110,15 @@ fun JournalScreen(
                     value = state.query,
                     onValueChange = vm::setQuery,
                     placeholder = { Text(stringResource(R.string.journal_search)) },
+                    leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+                    trailingIcon = {
+                        if (state.query.isNotEmpty()) {
+                            IconButton(onClick = { vm.setQuery("") }) {
+                                Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.cd_clear_search))
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(24.dp),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -128,7 +151,7 @@ fun JournalScreen(
                     }
                 }
             }
-            if (state.entries.isEmpty()) {
+            if (state.weeks.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize().padding(24.dp),
                     contentAlignment = Alignment.Center
@@ -142,19 +165,25 @@ fun JournalScreen(
                 }
             } else {
                 LazyColumn(
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp),
+                    // Bottom padding keeps the last entry clear of the add button.
+                    contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 88.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    items(state.entries, key = { it.id }) { entry ->
-                        SwipeableEntry(
-                            entry = entry,
-                            onClick = { onOpenEditor(entry.date) },
-                            onSwipedToDelete = {
-                                // Guard against re-triggers when the state briefly
-                                // transitions during LaunchedEffect reset.
-                                if (pendingDeleteId == null) pendingDeleteId = entry.id
-                            }
-                        )
+                    state.weeks.forEach { week ->
+                        item(key = week.monday.toString()) {
+                            WeekHeader(monday = week.monday)
+                        }
+                        items(week.entries, key = { it.id }) { entry ->
+                            SwipeableEntry(
+                                entry = entry,
+                                onClick = { onOpenEditor(entry.date) },
+                                onSwipedToDelete = {
+                                    // Guard against re-triggers when the state briefly
+                                    // transitions during LaunchedEffect reset.
+                                    if (pendingDeleteId == null) pendingDeleteId = entry.id
+                                }
+                            )
+                        }
                     }
                 }
             }
@@ -210,6 +239,8 @@ private fun SwipeableEntry(
         enableDismissFromStartToEnd = false,
         enableDismissFromEndToStart = true,
         backgroundContent = {
+            // The card is translucent: only draw the delete background while swiping.
+            if (dismissState.dismissDirection != SwipeToDismissBoxValue.EndToStart) return@SwipeToDismissBox
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -232,46 +263,83 @@ private fun SwipeableEntry(
     }
 }
 
+/** "This week", "Last week" or "Week of 19 Oct". */
+@Composable
+private fun WeekHeader(monday: LocalDate) {
+    val locale = LocalConfiguration.current.locales[0]
+    val thisMonday = JournalBrowsing.mondayOf(
+        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
+    )
+    val label = when (thisMonday.toEpochDays() - monday.toEpochDays()) {
+        0 -> stringResource(R.string.journal_week_current)
+        7 -> stringResource(R.string.journal_week_previous)
+        else -> {
+            val formatter = remember(locale) { DateTimeFormatter.ofPattern("d MMM", locale) }
+            val javaMonday = java.time.LocalDate.of(monday.year, monday.monthNumber, monday.dayOfMonth)
+            stringResource(R.string.journal_week_of, javaMonday.format(formatter))
+        }
+    }
+    Text(
+        label.uppercase(locale),
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.padding(top = 8.dp)
+    )
+}
+
+/** Strip color by mood: low in red, neutral in gold, good in green. */
+@Composable
+private fun moodColor(mood: Int): Color = when {
+    mood <= 2 -> MaterialTheme.colorScheme.error
+    mood == 3 -> MaterialTheme.colorScheme.secondary
+    else -> ClairjourSage
+}
+
 @Composable
 private fun EntryRow(entry: JournalEntryEntity, onClick: () -> Unit) {
     val context = LocalContext.current
+    val triggerKeys = stringArrayResource(R.array.journal_trigger_keys)
+    val triggerLabels = stringArrayResource(R.array.journal_trigger_labels)
+    val triggersText = entry.triggers
+        .map { key -> triggerLabels.getOrNull(triggerKeys.indexOf(key)) ?: key }
+        .joinToString(" · ")
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(14.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        Row(modifier = Modifier.height(IntrinsicSize.Min)) {
             Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .background(
-                        MaterialTheme.colorScheme.secondary.copy(alpha = 0.15f),
-                        CircleShape
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "${entry.mood}/5",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.secondary
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text(
-                    Formatters.date(entry.date, context),
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Modifier
+                    .width(6.dp)
+                    .fillMaxHeight()
+                    .background(moodColor(entry.mood))
+            )
+            Column(Modifier.padding(16.dp).weight(1f)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        Formatters.date(entry.date, context),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f)
+                    )
+                    Text(
+                        "${entry.mood}/5",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = moodColor(entry.mood)
+                    )
+                }
                 if (entry.notes.isNotBlank()) {
                     Text(
-                        entry.notes.take(80),
+                        entry.notes.take(120),
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2
                     )
+                }
+                if (triggersText.isNotEmpty()) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(triggersText, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.secondary)
                 }
             }
         }

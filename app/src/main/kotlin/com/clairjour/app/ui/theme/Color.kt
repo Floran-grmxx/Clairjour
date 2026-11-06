@@ -12,6 +12,7 @@ val ClairjourIvoryDim = Color(0xFFE9E4D5)
 val ClairjourInk = Color(0xFF2C2C2C)
 val ClairjourInkSoft = Color(0xFF4A4A4A)
 val ClairjourError = Color(0xFFB84545)
+val ClairjourSage = Color(0xFF6FA287)
 
 // Container tones: Material 3 falls back to lavender/grey when these are not set.
 val ClairjourIvoryLightest = Color(0xFFFBF8F1)

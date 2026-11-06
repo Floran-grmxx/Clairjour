@@ -74,6 +74,10 @@
     <string name="journal_gratitude">Reconnaissant pour</string>
     <string name="journal_cravings">Envies aujourd\'hui</string>
     <string name="journal_search">Rechercher</string>
+    <string name="journal_week_current">Cette semaine</string>
+    <string name="journal_week_previous">Semaine dernière</string>
+    <string name="journal_week_of">Semaine du %1$s</string>
+    <string name="cd_clear_search">Effacer la recherche</string>
 
     <string name="stats_title">Statistiques</string>
     <string name="stats_total_saved">Total économisé</string>
