@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R1→R6 faits (APK 13,2 Mo, thème, Accueil, Stats, Journal, Bouclier). Prochaine priorité : **R7 pastille Bouclier coupé**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R1→R7 faits (APK 13,2 Mo, thème, Accueil, Stats, Journal, Bouclier, pastille). Prochaine priorité : **R8 vérif Redmi + captures + release v1.2.0**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -79,7 +79,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R4** (2026-11-06) Stats : cartes Série (+ record) et Économisé (+ par jour), frise de jalons défilante (atteints ✓, prochain avec jours restants, ouverte sur le prochain), calendrier mensuel ‹ › (`domain/SobrietyCalendar.kt`, 6 tests), humeur + moyennes dans une carte, déclencheurs dans une carte. Vérifié sur émulateur (47 j, 517 €, nov./oct.)
 - [x] **R5** (2026-11-06) Journal : recherche en mémoire insensible à la casse et aux accents (`domain/JournalBrowsing.kt`, la recherche SQL `LIKE` supprimée), entrées regroupées par semaine (« Cette semaine », « Semaine dernière », « Semaine du … »), bande de couleur d'humeur (rouge/doré/vert sauge) + déclencheurs sur la carte, barre de recherche arrondie avec effacement. Bugs corrigés : bouton « + » sous la barre du bas (même cause que l'Accueil), fond rouge + poubelle visible à travers les cartes au repos (dessiné seulement pendant le glissement). 6 nouveaux tests (75 au total)
 - [x] **R6** (2026-11-06) Bouclier : statut → interrupteurs → section « Fiabilité » en bas ; carte « Garder le bouclier allumé » repliée avec « ✓ fait » quand `ShieldKeepAlive.isDone` (batterie sans restriction + démarrage auto non refusé), dépliée sinon ; 4 tests. Repli à vérifier sur le Redmi (émulateur : batterie non réglée → dépliée, attendu)
-- [ ] **R7** Pastille rouge sur l'onglet Paramètres si le Bouclier est coupé par le système
+- [x] **R7** (2026-11-06) Pastille rouge (`BadgedBox`) sur l'onglet Paramètres quand `ShieldKeepAlive.needsAttention` (bouclier voulu + `STOPPED_BY_SYSTEM`), état relu à chaque retour dans l'app + écoute accessibilité ; test unitaire. ⚠️ Non simulable sur émulateur (le système relance le service aussitôt ; `am force-stop` retire le service des réglages → état OFF) → à vérifier sur le Redmi
 - [ ] **R8** Vérif Redmi + captures + release v1.2.0 (versionCode 5)
 
 ## ⏳ Reste à faire

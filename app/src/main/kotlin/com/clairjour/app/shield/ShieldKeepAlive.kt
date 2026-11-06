@@ -9,4 +9,8 @@ object ShieldKeepAlive {
      */
     fun isDone(batteryUnrestricted: Boolean, autostartAllowed: Boolean?, hasAutostartSettings: Boolean): Boolean =
         batteryUnrestricted && !(hasAutostartSettings && autostartAllowed == false)
+
+    /** The user wants the shield but the phone stopped it: worth a badge on the Settings tab. */
+    fun needsAttention(serviceState: ShieldServiceState, shieldWanted: Boolean): Boolean =
+        shieldWanted && serviceState == ShieldServiceState.STOPPED_BY_SYSTEM
 }

@@ -299,6 +299,7 @@
     <string name="shield_status_stopped">Bouclier arrêté par le téléphone</string>
     <string name="shield_restart">Relancer</string>
     <string name="shield_master_body">Les met en pause d\'un coup, sans toucher aux réglages Android</string>
+    <string name="cd_shield_stopped_badge">Bouclier arrêté par le téléphone</string>
     <string name="shield_reliability_section">Fiabilité</string>
     <string name="shield_keep_alive_done">✓ fait</string>
     <string name="shield_keep_alive_title">Garder le bouclier allumé</string>

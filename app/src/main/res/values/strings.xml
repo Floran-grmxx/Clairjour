@@ -311,6 +311,7 @@
     <string name="shield_status_stopped">Shield stopped by your phone</string>
     <string name="shield_restart">Restart</string>
     <string name="shield_master_body">Pauses them all at once, without touching Android settings</string>
+    <string name="cd_shield_stopped_badge">Shield stopped by the phone</string>
     <string name="shield_reliability_section">Reliability</string>
     <string name="shield_keep_alive_done">✓ done</string>
     <string name="shield_keep_alive_title">Keep the shield running</string>

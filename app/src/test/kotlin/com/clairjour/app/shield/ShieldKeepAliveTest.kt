@@ -23,6 +23,14 @@ class ShieldKeepAliveTest {
     }
 
     @Test
+    fun `attention only when wanted and stopped by the system`() {
+        assertTrue(ShieldKeepAlive.needsAttention(ShieldServiceState.STOPPED_BY_SYSTEM, shieldWanted = true))
+        assertFalse(ShieldKeepAlive.needsAttention(ShieldServiceState.STOPPED_BY_SYSTEM, shieldWanted = false))
+        assertFalse(ShieldKeepAlive.needsAttention(ShieldServiceState.RUNNING, shieldWanted = true))
+        assertFalse(ShieldKeepAlive.needsAttention(ShieldServiceState.OFF, shieldWanted = true))
+    }
+
+    @Test
     fun `phones without autostart setting only need the battery`() {
         assertTrue(ShieldKeepAlive.isDone(batteryUnrestricted = true, autostartAllowed = null, hasAutostartSettings = false))
     }
