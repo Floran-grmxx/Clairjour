@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R2 fait (barre du bas + interrupteurs aux couleurs Clairjour). Prochaine priorité : **R3 Accueil minimal**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R3 fait (Accueil allégé + 3 bugs corrigés dont le bouton « Respire » invisible). Prochaine priorité : **R4 Stats (calendrier + badges)**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -75,7 +75,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 ## 🎨 v1.2 — Refonte visuelle + optimisation (plan)
 - [x] **R1** (2026-11-06) Optimisation : AGP 9.1.1 + Gradle 9.3.1 + Kotlin 2.1.20 + KSP 2.0.1 + Room 2.7.0 + BOM 2025.01 (même combo qu'AlcoLimit, Kotlin 2.2 non retenu), Vico **retiré** (jamais utilisé, courbe en `Canvas`), abiFilters ARM → **APK release 26,0 → 13,2 Mo**, debug 48,5 → 34,7 Mo ; baseline profile vérifié dans l'APK ; durée d'analyse du Bouclier loguée en debug (« evaluation took N ms », à lire sur le Redmi en R8) ; compteur à la minute reporté à R3
 - [x] **R2** (2026-11-06) Thème : `surfaceContainer*` définis en clair (ivoire) et sombre (bleu nuit), pastille de la barre du bas = `surfaceVariant` + icône `primary`, `ClairjourSwitch` commun (éteint neutre) sur les 4 écrans. Vérifié sur émulateur clair + sombre
-- [ ] **R3** Accueil minimal (variante C) : barre de jalon continue + %, « + X h Y min », sans économies ni bouclier
+- [x] **R3** (2026-11-06) Accueil : compteur « + X h YY min » rafraîchi au début de chaque minute (au lieu de chaque seconde), barre de jalon continue (`gapSize = 0.dp`, sans point final) + pourcentage localisé. Bugs corrigés au passage : bouton « Respire » caché sous la barre du bas (padding de la barre appliqué au `Scaffold` de l'Accueil), état vide « Que veux-tu suivre ? » affiché pendant le chargement de la base (`state.loading` ignoré), « dans 1 jours » → plurals `home_next_milestone`. Vérifié sur émulateur
 - [ ] **R4** Stats : cartes Série/Économisé, frise de badges, calendrier mensuel ‹ ›, humeur allégée
 - [ ] **R5** Journal : recherche texte, puces filtres, regroupement par semaine, bande couleur humeur
 - [ ] **R6** Bouclier : interrupteurs en premier, carte « Fiabilité » repliée quand tout est réglé
@@ -91,6 +91,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **v0.3 features possibles** : auto-backup WorkManager (nécessite décision sur stockage passphrase), Vico 2.0.0 stable dès sortie, remontée des raisons perso sur HomeScreen
 
 ## 📋 Notes / gotchas
+- **Écran imbriqué avec son propre `Scaffold`** (Accueil) : le padding de la barre du bas (`contentPadding`) doit aller sur le `Scaffold` lui-même, sinon FAB et snackbar sont dessinés sous la barre.
+- **Ouverture SQLCipher ~15 s sur l'émulateur** (traduction ARM, APK sans x86) : normal en émulateur, à chronométrer sur le Redmi en R8.
 - **Émulateur + abiFilters ARM** : l'émulateur Pixel_7 (x86_64) lance quand même l'app grâce à la traduction ARM (abilist `x86_64,arm64-v8a`), premier démarrage lent (splash quelques secondes).
 - **adb depuis Git Bash** : `/sdcard/...` est converti en chemin Windows → `export MSYS_NO_PATHCONV=1`. `uiautomator dump` peut se bloquer : l'encadrer d'un `timeout 30`.
 - **Barre de progression « coupée » avec un point** : style par défaut du `LinearProgressIndicator` M3 récent (gap + stop indicator) → `gapSize = 0.dp`, `drawStopIndicator = {}`.

@@ -29,7 +29,11 @@
 
     <string name="home_days_label">jours de sobriété</string>
     <string name="home_day_label">jour de sobriété</string>
-    <string name="home_next_milestone">Prochain jalon : %1$s dans %2$d jours</string>
+    <plurals name="home_next_milestone">
+        <item quantity="one">Prochain jalon : %1$s dans %2$d jour</item>
+        <item quantity="other">Prochain jalon : %1$s dans %2$d jours</item>
+    </plurals>
+    <string name="home_elapsed_hours_minutes">+ %1$d h %2$02d min</string>
     <string name="home_pledge_cta">S\'engager pour aujourd\'hui</string>
     <string name="home_pledge_done">Engagement pris ✓</string>
     <string name="home_quote_of_day">Pensée du jour</string>

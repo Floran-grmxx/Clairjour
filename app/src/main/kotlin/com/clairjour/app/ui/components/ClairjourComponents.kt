@@ -23,11 +23,14 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import java.text.NumberFormat
 
 @Composable
 fun ClairjourBrandBadge(modifier: Modifier = Modifier) {
@@ -73,18 +76,37 @@ fun MilestoneProgress(
     progress: Float,
     modifier: Modifier = Modifier
 ) {
+    val clampedProgress = progress.coerceIn(0f, 1f)
+    val locale = LocalConfiguration.current.locales[0]
+    val percentText = remember(clampedProgress, locale) {
+        NumberFormat.getPercentInstance(locale).format(clampedProgress)
+    }
     Column(modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = percentText,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
         Spacer(Modifier.height(6.dp))
+        // One continuous bar: no gap between filled and empty parts, no end dot.
         LinearProgressIndicator(
-            progress = { progress.coerceIn(0f, 1f) },
+            progress = { clampedProgress },
             modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
             color = MaterialTheme.colorScheme.secondary,
-            trackColor = MaterialTheme.colorScheme.surfaceVariant
+            trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            gapSize = 0.dp,
+            drawStopIndicator = {}
         )
     }
 }

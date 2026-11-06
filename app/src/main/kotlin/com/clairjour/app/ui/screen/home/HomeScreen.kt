@@ -56,6 +56,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -110,7 +111,9 @@ fun HomeScreen(
     val relapseUndoText = stringResource(R.string.relapse_undo)
     val relapseAlreadyTodayText = stringResource(R.string.relapse_already_today)
 
+    // The app's bottom bar padding goes on the Scaffold so the FAB and snackbar sit above it.
     Scaffold(
+        modifier = Modifier.padding(contentPadding),
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             if (state.current != null) {
@@ -136,7 +139,6 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
-                .padding(contentPadding)
                 .padding(horizontal = 20.dp)
         ) {
             // Scrollable main content — adapts to any screen height.
@@ -160,7 +162,9 @@ fun HomeScreen(
                     Spacer(Modifier.height(8.dp))
                 }
 
-                if (current == null) {
+                if (state.loading) {
+                    // Database still opening: show nothing rather than the "add a domain" prompt.
+                } else if (current == null) {
                     EmptyState(onAdd = onAddAddiction)
                 } else {
                     CounterBlock(addiction = current, startDate = current.startDate)
@@ -169,8 +173,9 @@ fun HomeScreen(
                     state.nextMilestone?.let { next ->
                         val remaining = (next.days - state.streakDays).coerceAtLeast(0)
                         MilestoneProgress(
-                            label = stringResource(
-                                R.string.home_next_milestone,
+                            label = pluralStringResource(
+                                R.plurals.home_next_milestone,
+                                remaining,
                                 stringResource(next.labelRes),
                                 remaining
                             ),
@@ -394,7 +399,9 @@ private fun CounterBlock(
     var now by remember { mutableStateOf(Clock.System.now()) }
     LaunchedEffect(startDate) {
         while (isActive) {
-            delay(1_000)
+            // Only hours and minutes are shown: wake up at the start of each minute.
+            val millisIntoMinute = Clock.System.now().toEpochMilliseconds() % 60_000
+            delay(60_000 - millisIntoMinute)
             now = Clock.System.now()
         }
     }
@@ -403,7 +410,6 @@ private fun CounterBlock(
     val elapsedDays = totalSeconds / 86_400
     val hours = (totalSeconds % 86_400) / 3_600
     val minutes = (totalSeconds % 3_600) / 60
-    val seconds = totalSeconds % 60
 
     val type = AddictionType.fromName(addiction.type)
     val counterDescription = stringResource(
@@ -443,11 +449,11 @@ private fun CounterBlock(
             color = MaterialTheme.colorScheme.secondary,
             fontWeight = FontWeight.Medium
         )
-        Spacer(Modifier.height(12.dp))
+        Spacer(Modifier.height(4.dp))
 
         Text(
-            text = "%dh %02dm %02ds".format(hours, minutes, seconds),
-            style = MaterialTheme.typography.headlineSmall,
+            text = stringResource(R.string.home_elapsed_hours_minutes, hours.toInt(), minutes.toInt()),
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Light,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )

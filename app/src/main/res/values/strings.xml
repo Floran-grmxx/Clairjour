@@ -32,7 +32,11 @@
     <!-- Home -->
     <string name="home_days_label">days sober</string>
     <string name="home_day_label">day sober</string>
-    <string name="home_next_milestone">Next milestone: %1$s in %2$d days</string>
+    <plurals name="home_next_milestone">
+        <item quantity="one">Next milestone: %1$s in %2$d day</item>
+        <item quantity="other">Next milestone: %1$s in %2$d days</item>
+    </plurals>
+    <string name="home_elapsed_hours_minutes">+ %1$d h %2$02d min</string>
     <string name="home_pledge_cta">Pledge for today</string>
     <string name="home_pledge_done">Pledge kept ✓</string>
     <string name="home_quote_of_day">Thought of the day</string>
