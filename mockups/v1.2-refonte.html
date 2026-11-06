@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clairjour v1.2 — Refonte</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:wght@400;700&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1E3A5F; --blue-dark: #14283F; --blue-deep: #0B1826;
+    --gold: #D4A857; --gold-muted: #B98F42;
+    --ivory: #F5F1E8; --ivory-dim: #E9E4D5; --ink: #2C2C2C; --ink-soft: #4A4A4A; --error: #B84545;
+    --page: #d9d4c7;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--page); font-family: Roboto, sans-serif; color: var(--ink); padding: 24px 16px 60px; }
+  h1 { font-family: 'Noto Serif', serif; margin: 0 0 4px; }
+  .intro { max-width: 900px; margin-bottom: 18px; color: var(--ink-soft); }
+  .toolbar { position: sticky; top: 0; z-index: 10; background: var(--page); padding: 8px 0 12px; display: flex; gap: 8px; flex-wrap: wrap; }
+  .toolbar button { border: 1px solid var(--blue); background: transparent; color: var(--blue); padding: 8px 14px; border-radius: 20px; cursor: pointer; font: 500 14px Roboto; }
+  .toolbar button.on { background: var(--blue); color: var(--ivory); }
+  section { margin: 28px 0 8px; }
+  section > h2 { font-family: 'Noto Serif', serif; font-size: 22px; margin: 0 0 4px; }
+  section > p.lead { margin: 0 0 14px; color: var(--ink-soft); max-width: 900px; }
+  .row { display: flex; gap: 22px; flex-wrap: wrap; align-items: flex-start; }
+  .variant { display: flex; flex-direction: column; gap: 8px; width: 300px; }
+  .variant h3 { margin: 0; font-size: 15px; }
+  .variant .note { font-size: 13px; color: var(--ink-soft); margin: 0; }
+  .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 10px; background: var(--gold); color: var(--blue-deep); font-weight: 700; margin-left: 6px; }
+
+  /* Phone frame + theme tokens */
+  .phone { width: 300px; height: 640px; border-radius: 30px; overflow: hidden; display: flex; flex-direction: column; border: 8px solid #111; position: relative;
+    --bg: var(--ivory); --fg: var(--ink); --fg-soft: var(--ink-soft); --card: #EFEADD; --card-strong: var(--blue); --on-card-strong: var(--ivory);
+    --accent: var(--blue); --accent2: var(--gold-muted); --nav: #EFEADD; --nav-pill: var(--ivory-dim); --nav-ico: var(--blue); --track: var(--ivory-dim); --track-thumb: var(--gold-muted);
+    background: var(--bg); color: var(--fg); }
+  .dark .phone, .phone.dark { --bg: var(--blue-deep); --fg: var(--ivory); --fg-soft: var(--ivory-dim); --card: var(--blue-dark); --card-strong: var(--blue);
+    --accent: var(--gold); --accent2: var(--gold); --nav: var(--blue-dark); --nav-pill: var(--blue); --nav-ico: var(--gold); --track: var(--blue); --track-thumb: var(--ivory-dim); }
+  .status { height: 26px; font-size: 11px; padding: 6px 16px; display: flex; justify-content: space-between; color: var(--fg-soft); flex: none; }
+  .screen { flex: 1; overflow-y: auto; padding: 8px 16px 16px; scrollbar-width: none; }
+  .screen::-webkit-scrollbar { display: none; }
+  .serif { font-family: 'Noto Serif', serif; }
+  .title { font-family: 'Noto Serif', serif; font-weight: 700; font-size: 22px; margin: 6px 0 12px; }
+  .card { background: var(--card); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; }
+  .label { font-size: 10.5px; letter-spacing: .6px; color: var(--accent2); font-weight: 500; }
+  .big { font-family: 'Noto Serif', serif; font-weight: 700; font-size: 22px; }
+  .muted { color: var(--fg-soft); font-size: 12px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .grid2 .card { margin: 0; }
+  .btn { display: block; width: 100%; text-align: center; border-radius: 12px; padding: 11px; font-weight: 700; font-size: 13px; letter-spacing: .5px; border: none; margin-bottom: 10px; }
+  .btn.gold { background: var(--gold); color: var(--blue-deep); }
+  .btn.outline { background: transparent; border: 1.5px solid var(--gold-muted); color: var(--accent); }
+  .btn.done { background: transparent; border: 1.5px solid var(--gold); color: var(--accent2); }
+  .link-red { text-align: center; color: var(--error); font-size: 12px; letter-spacing: 1px; margin: 14px 0 4px; font-weight: 500; }
+  .nav { flex: none; height: 58px; background: var(--nav); display: flex; justify-content: space-around; align-items: center; font-size: 10px; color: var(--fg-soft); }
+  .nav div { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+  .nav .ico { width: 44px; height: 24px; border-radius: 12px; display: grid; place-items: center; font-size: 14px; }
+  .nav .sel .ico { background: var(--nav-pill); color: var(--nav-ico); }
+  .nav .sel { color: var(--fg); font-weight: 700; }
+  .nav.bad { background: #F0EAF5; } .dark .nav.bad, .phone.dark .nav.bad { background: #1F1F23; }
+  .nav.bad .sel .ico { background: var(--gold-muted); color: var(--ink); }
+  .counter { text-align: center; margin: 14px 0 8px; }
+  .counter .num { font-family: 'Noto Serif', serif; font-weight: 700; font-size: 76px; line-height: 1; }
+  .counter .unit { color: var(--accent2); font-size: 18px; font-weight: 500; margin-top: 2px; }
+  .counter .sub { color: var(--fg-soft); font-size: 12px; margin-top: 4px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--track); overflow: hidden; margin: 6px 0 12px; }
+  .bar > i { display: block; height: 100%; background: var(--gold); border-radius: 3px; }
+  .barlabel { display: flex; justify-content: space-between; font-size: 11.5px; }
+  .week { display: flex; justify-content: space-between; margin-top: 8px; }
+  .week div { text-align: center; font-size: 10px; color: var(--fg-soft); }
+  .week b { display: block; width: 26px; height: 26px; border-radius: 50%; margin-top: 3px; background: var(--gold); }
+  .week b.today { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--gold); }
+  .week b.mood { background: transparent; border: 2px solid var(--gold); }
+  .shield-chip { display: flex; align-items: center; gap: 10px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #4CAF7A; flex: none; }
+  .fab { position: absolute; right: 18px; bottom: 74px; background: var(--blue); color: var(--ivory); border-radius: 16px; padding: 12px 16px; font-weight: 700; font-size: 13px; box-shadow: 0 4px 12px rgba(0,0,0,.25); }
+  .dark .fab, .phone.dark .fab { background: var(--gold); color: var(--blue-deep); }
+  .ring { position: relative; width: 190px; height: 190px; margin: 6px auto 8px; }
+  .ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ring .in { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring .num { font-family: 'Noto Serif', serif; font-weight: 700; font-size: 60px; line-height: 1; }
+  .quote { font-style: italic; font-size: 13.5px; margin-top: 4px; }
+  .rowline { display: flex; justify-content: space-between; align-items: center; }
+  .arrow { color: var(--gold); }
+  /* Stats */
+  .heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+  .heat i { aspect-ratio: 1; border-radius: 4px; background: var(--track); }
+  .heat i.s { background: var(--gold); } .heat i.s2 { background: var(--gold-muted); } .heat i.r { background: var(--error); } .heat i.f { opacity: .25; }
+  .legend { display: flex; gap: 10px; font-size: 10px; color: var(--fg-soft); margin-top: 6px; }
+  .legend span::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 4px; background: var(--c); }
+  .timeline { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; scrollbar-width: none; }
+  .badge { flex: none; width: 62px; text-align: center; font-size: 10.5px; }
+  .badge b { display: grid; place-items: center; width: 48px; height: 48px; margin: 0 auto 4px; border-radius: 50%; background: var(--gold); color: var(--blue-deep); font-family: 'Noto Serif', serif; font-size: 15px; }
+  .badge.next b { background: transparent; border: 2px dashed var(--gold); color: var(--accent2); }
+  .badge.lock b { background: var(--track); color: var(--fg-soft); }
+  .badge.lock { color: var(--fg-soft); }
+  .spark { width: 100%; height: 70px; }
+  /* Journal */
+  .entry { display: flex; gap: 10px; }
+  .mood-pill { flex: none; width: 6px; border-radius: 3px; }
+  .search { border-radius: 24px; background: var(--card); padding: 9px 14px; font-size: 12.5px; color: var(--fg-soft); margin-bottom: 10px; }
+  .chips { display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap; }
+  .chips span { border: 1px solid var(--gold-muted); border-radius: 8px; padding: 4px 8px; font-size: 11px; }
+  .chips span.on { background: var(--gold); color: var(--blue-deep); border-color: var(--gold); }
+  .tagline { font-size: 10.5px; color: var(--accent2); margin-top: 4px; }
+  /* Shield */
+  .banner { background: var(--blue); color: var(--ivory); border-radius: 16px; padding: 12px 14px; margin-bottom: 10px; }
+  .toggle { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 9px 0; }
+  .toggle .t { font-size: 14px; } .toggle .d { font-size: 11px; color: var(--fg-soft); }
+  .sw { flex: none; width: 44px; height: 24px; border-radius: 12px; background: var(--blue); position: relative; }
+  .dark .sw, .phone.dark .sw { background: var(--gold); }
+  .sw::after { content: ''; position: absolute; right: 3px; top: 3px; width: 18px; height: 18px; border-radius: 50%; background: var(--ivory); }
+  .dark .sw::after, .phone.dark .sw::after { background: var(--blue-deep); }
+  .sw.off { background: var(--track); } .sw.off::after { left: 4px; right: auto; top: 5px; width: 14px; height: 14px; background: var(--track-thumb); }
+  .sw.bad { background: #EEE6F2; border: 2px solid var(--gold-muted); } .sw.bad::after { left: 4px; right: auto; top: 3px; background: var(--gold-muted); }
+  .section-label { font-size: 11px; letter-spacing: 1px; color: var(--accent2); margin: 12px 0 2px; font-weight: 500; }
+  .collapsed { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+  .ok { color: #4CAF7A; font-weight: 700; }
+  .opt-list { margin: 0; padding-left: 18px; font-size: 14px; }
+  .opt-list li { margin: 4px 0; }
+</style>
+</head>
+<body>
+<h1>Clairjour v1.2 — Refonte visuelle</h1>
+<p class="intro">Maquettes de travail avec les vraies couleurs de l'app. Chaque section propose des variantes : indique-moi laquelle tu gardes (ex. « Accueil B, Stats A »). Le bouton ci-dessous bascule entre le thème clair et le sombre.</p>
+<div class="toolbar">
+  <button id="light" class="on" onclick="setTheme(false)">Thème clair</button>
+  <button id="dark" onclick="setTheme(true)">Thème sombre</button>
+</div>
+<div id="root">
+
+<!-- 1. Corrections -->
+<section>
+  <h2>1. Corrections de fond (s'appliquent partout)</h2>
+  <p class="lead">Barre de navigation et interrupteurs remis aux couleurs Clairjour, avant/après.</p>
+  <div class="row">
+    <div class="variant"><h3>Avant</h3>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="toggle"><div><div class="t">Reels des profils</div><div class="d">Un reel ouvert depuis un profil se ferme aussitôt</div></div><div class="sw bad"></div></div>
+          <div class="toggle"><div><div class="t">Onglet Reels</div><div class="d">Te renvoie sur l'accueil</div></div><div class="sw"></div></div>
+          <p class="muted" style="margin-top:20px">Barre en bas lavande/grise et interrupteur « éteint » lavande avec bordure dorée : ce sont les couleurs Material par défaut, pas celles de Clairjour.</p>
+        </div>
+        <div class="nav bad"><div><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div class="sel"><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+    <div class="variant"><h3>Après</h3>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="toggle"><div><div class="t">Reels des profils</div><div class="d">Un reel ouvert depuis un profil se ferme aussitôt</div></div><div class="sw off"></div></div>
+          <div class="toggle"><div><div class="t">Onglet Reels</div><div class="d">Te renvoie sur l'accueil</div></div><div class="sw"></div></div>
+          <p class="muted" style="margin-top:20px">Barre en ivoire légèrement teinté (clair) ou bleu nuit (sombre) et pastille sélectionnée cohérente. Interrupteur éteint neutre, sans lavande.</p>
+        </div>
+        <div class="nav"><div><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div class="sel"><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+  </div>
+</section>
+
+<!-- 2. Accueil -->
+<section>
+  <h2>2. Accueil</h2>
+  <p class="lead">Aujourd'hui la moitié basse de l'écran est vide et « 23h 56m 48s » est ambigu. Trois directions possibles.</p>
+  <div class="row">
+    <div class="variant"><h3>A — Tableau de bord <span class="tag">recommandé</span></h3>
+      <p class="note">Compteur + barre continue, puis cartes économies/bouclier et semaine.</p>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="counter"><div class="serif" style="font-size:18px;font-weight:700">Tabac</div><div class="num">47</div><div class="unit">jours de sobriété</div><div class="sub">+ 23 h 56 min</div></div>
+          <div class="barlabel"><span>Prochain jalon : 2 mois</span><span class="muted">dans 13 j</span></div>
+          <div class="bar"><i style="width:78%"></i></div>
+          <div class="grid2">
+            <div class="card"><div class="label">ÉCONOMISÉ</div><div class="big">517 €</div></div>
+            <div class="card"><div class="label">BOUCLIER</div><div class="shield-chip" style="margin-top:6px"><span class="dot"></span><b style="font-size:14px">Actif</b></div></div>
+          </div>
+          <div class="card"><div class="label">CETTE SEMAINE</div>
+            <div class="week"><div>L<b></b></div><div>M<b></b></div><div>M<b></b></div><div>J<b></b></div><div>V<b></b></div><div>S<b></b></div><div>D<b class="today mood"></b></div></div></div>
+          <button class="btn gold">S'engager pour aujourd'hui</button>
+          <div class="card"><div class="label">PENSÉE DU JOUR</div><div class="quote">« Un pas, encore un pas, encore un. »</div></div>
+          <div class="card rowline"><b style="font-size:14px">Écrire l'entrée du jour</b><span class="arrow">→</span></div>
+          <div class="link-red">Signaler une rechute</div>
+        </div>
+        <div class="fab">◎ Respire</div>
+        <div class="nav"><div class="sel"><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+
+    <div class="variant"><h3>B — Anneau de progression</h3>
+      <p class="note">Le chiffre est entouré d'un anneau qui se remplit jusqu'au prochain jalon. Plus visuel, moins d'infos.</p>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="serif" style="text-align:center;font-size:18px;font-weight:700;margin-top:6px">Tabac</div>
+          <div class="ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="var(--track)" stroke-width="6"/><circle cx="50" cy="50" r="44" fill="none" stroke="var(--gold)" stroke-width="6" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="61"/></svg>
+            <div class="in"><div class="num">47</div><div style="color:var(--accent2);font-weight:500">jours</div><div class="muted">2 mois dans 13 j</div></div></div>
+          <div class="grid2">
+            <div class="card" style="text-align:center"><div class="big">517 €</div><div class="muted">économisés</div></div>
+            <div class="card" style="text-align:center"><div class="big">5</div><div class="muted">jalons</div></div>
+          </div>
+          <button class="btn done">✓ Engagé pour aujourd'hui</button>
+          <div class="card"><div class="label">PENSÉE DU JOUR</div><div class="quote">« Un pas, encore un pas, encore un. »</div></div>
+          <div class="card rowline"><b style="font-size:14px">Écrire l'entrée du jour</b><span class="arrow">→</span></div>
+          <div class="link-red">Signaler une rechute</div>
+        </div>
+        <div class="fab">◎ Respire</div>
+        <div class="nav"><div class="sel"><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+
+    <div class="variant"><h3>C — Épuré (proche de l'actuel)</h3>
+      <p class="note">On garde l'esprit actuel ; on corrige la barre, le sous-compteur, et une ligne « économies » comble le vide.</p>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="counter" style="margin-top:28px"><div class="serif" style="font-size:18px;font-weight:700">Tabac</div><div class="num" style="font-size:90px">47</div><div class="unit">jours de sobriété</div><div class="sub">+ 23 h 56 min</div></div>
+          <div class="barlabel" style="margin-top:14px"><span>Prochain jalon : 2 mois</span><span class="muted">78 %</span></div>
+          <div class="bar"><i style="width:78%"></i></div>
+          <p style="text-align:center;margin:4px 0 14px;font-size:13px"><b>517 €</b> <span class="muted">économisés · bouclier</span> <span class="dot" style="display:inline-block"></span></p>
+          <button class="btn gold">S'engager pour aujourd'hui</button>
+          <div class="card"><div class="label">PENSÉE DU JOUR</div><div class="quote">« Un pas, encore un pas, encore un. »</div></div>
+          <div class="card rowline"><b style="font-size:14px">Écrire l'entrée du jour</b><span class="arrow">→</span></div>
+          <div class="link-red">Signaler une rechute</div>
+        </div>
+        <div class="fab">◎ Respire</div>
+        <div class="nav"><div class="sel"><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+  </div>
+</section>
+
+<!-- 3. Stats -->
+<section>
+  <h2>3. Statistiques</h2>
+  <p class="lead">Les jalons, en simple liste de points, deviennent visuels et un calendrier montre la régularité.</p>
+  <div class="row">
+    <div class="variant"><h3>A — Calendrier + frise de badges <span class="tag">recommandé</span></h3>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="title">Statistiques</div>
+          <div class="grid2">
+            <div class="card"><div class="label">SÉRIE</div><div class="big">47 j</div><div class="muted">record 47 j</div></div>
+            <div class="card"><div class="label">ÉCONOMISÉ</div><div class="big">517 €</div><div class="muted">11 €/jour</div></div>
+          </div>
+          <div class="card"><div class="label">JALONS</div>
+            <div class="timeline">
+              <div class="badge"><b>1j</b>1 jour</div><div class="badge"><b>3j</b>3 jours</div><div class="badge"><b>1s</b>1 sem.</div><div class="badge"><b>2s</b>2 sem.</div><div class="badge"><b>1m</b>1 mois</div><div class="badge next"><b>2m</b>dans 13 j</div><div class="badge lock"><b>3m</b>3 mois</div><div class="badge lock"><b>6m</b>6 mois</div>
+            </div></div>
+          <div class="card"><div class="rowline"><div class="label">OCTOBRE – NOVEMBRE</div><span class="muted">‹ ›</span></div>
+            <div class="heat" id="heat"></div>
+            <div class="legend"><span style="--c:var(--gold)">sobre</span><span style="--c:var(--gold-muted)">sobre + journal</span><span style="--c:var(--error)">rechute</span></div></div>
+          <div class="card"><div class="label">HUMEUR · 30 JOURS</div>
+            <svg class="spark" viewBox="0 0 260 70" preserveAspectRatio="none"><polyline fill="none" stroke="var(--gold)" stroke-width="2.5" points="0,50 20,46 40,52 60,40 80,42 100,34 120,38 140,28 160,30 180,22 200,26 220,18 240,20 260,14"/></svg>
+            <div class="muted">Moyenne 7 j : 3,8 · 30 j : 3,4</div></div>
+          <div class="card"><div class="label">DÉCLENCHEURS FRÉQUENTS</div><div style="font-size:13px;margin-top:4px">Stress · Soirée · Ennui</div></div>
+        </div>
+        <div class="nav"><div><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div class="sel"><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+
+    <div class="variant"><h3>B — Jalons en liste verticale enrichie</h3>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="title">Statistiques</div>
+          <div class="grid2">
+            <div class="card"><div class="label">SÉRIE</div><div class="big">47 j</div></div>
+            <div class="card"><div class="label">ÉCONOMISÉ</div><div class="big">517 €</div></div>
+          </div>
+          <div class="card"><div class="label">JALONS</div>
+            <div style="border-left:2px solid var(--gold);margin:8px 0 0 8px;padding-left:14px;font-size:13px;line-height:2">
+              <div>✓ 1 mois <span class="muted">· 20 sept.</span></div>
+              <div>✓ 2 semaines <span class="muted">· 3 sept.</span></div>
+              <div style="color:var(--accent2);font-weight:700">◌ 2 mois <span class="muted">· dans 13 j</span></div>
+              <div class="muted">3 mois · 6 mois · 1 an</div>
+            </div></div>
+          <div class="card"><div class="label">HUMEUR · 30 JOURS</div>
+            <svg class="spark" viewBox="0 0 260 70" preserveAspectRatio="none"><polyline fill="none" stroke="var(--gold)" stroke-width="2.5" points="0,50 20,46 40,52 60,40 80,42 100,34 120,38 140,28 160,30 180,22 200,26 220,18 240,20 260,14"/></svg></div>
+        </div>
+        <div class="nav"><div><span class="ico">⌂</span>Accueil</div><div><span class="ico">▤</span>Journal</div><div class="sel"><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+  </div>
+</section>
+
+<!-- 4. Journal + Bouclier -->
+<section>
+  <h2>4. Journal et Bouclier</h2>
+  <p class="lead">Journal : recherche, cartes aérées, humeur en couleur. Bouclier : la carte de réglages se replie une fois faite et la liste passe en premier.</p>
+  <div class="row">
+    <div class="variant"><h3>Journal</h3>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="title">Journal</div>
+          <div class="search">🔍 Rechercher dans mes entrées</div>
+          <div class="chips"><span class="on">Tout</span><span>Humeur ≥ 4</span><span>Envies</span><span>Stress</span></div>
+          <div class="muted" style="margin:6px 0">CETTE SEMAINE</div>
+          <div class="card entry"><div class="mood-pill" style="background:#4CAF7A"></div><div><div class="rowline" style="gap:30px"><b style="font-size:13px">Jeudi 5 nov.</b><span>😊</span></div><div style="font-size:12.5px;margin-top:3px">Bonne journée, pas pensé à fumer avant ce soir.</div><div class="tagline">Soirée · envie 2/5</div></div></div>
+          <div class="card entry"><div class="mood-pill" style="background:var(--gold)"></div><div><div class="rowline" style="gap:30px"><b style="font-size:13px">Mardi 3 nov.</b><span>😐</span></div><div style="font-size:12.5px;margin-top:3px">Réunion tendue. J'ai fait la respiration 4 s.</div><div class="tagline">Stress · envie 4/5</div></div></div>
+          <div class="card entry"><div class="mood-pill" style="background:var(--error)"></div><div><div class="rowline" style="gap:30px"><b style="font-size:13px">Lundi 2 nov.</b><span>😟</span></div><div style="font-size:12.5px;margin-top:3px">Fatigué, envie forte après le repas.</div><div class="tagline">Ennui · envie 5/5</div></div></div>
+        </div>
+        <div class="fab">＋</div>
+        <div class="nav"><div><span class="ico">⌂</span>Accueil</div><div class="sel"><span class="ico">▤</span>Journal</div><div><span class="ico">▥</span>Stats</div><div><span class="ico">⚙</span>Paramètres</div></div>
+      </div></div>
+
+    <div class="variant"><h3>Bouclier Instagram</h3>
+      <div class="phone"><div class="status"><span>9:30</span><span>▮</span></div>
+        <div class="screen">
+          <div class="title" style="text-align:center">← Bouclier Instagram</div>
+          <div class="banner"><b>🛡 Bouclier actif</b><div style="font-size:12px;margin-top:4px">Clairjour applique les blocages choisis ci-dessous.</div></div>
+          <div class="toggle"><div><div class="t"><b>Toutes les protections</b></div><div class="d">Pause d'un coup</div></div><div class="sw"></div></div>
+          <div class="section-label">CE QUE TU BLOQUES</div>
+          <div class="toggle"><div><div class="t">Onglet Reels</div><div class="d">Te renvoie sur l'accueil</div></div><div class="sw"></div></div>
+          <div class="toggle"><div><div class="t">Un seul reel à la fois</div><div class="d">Passer au suivant te fait revenir en arrière</div></div><div class="sw"></div></div>
+          <div class="toggle"><div><div class="t">Reels des profils</div><div class="d">Se ferment aussitôt</div></div><div class="sw off"></div></div>
+          <div class="toggle"><div><div class="t">Suggestions de la recherche</div><div class="d">Grille masquée</div></div><div class="sw"></div></div>
+          <div class="section-label">FIABILITÉ</div>
+          <div class="card collapsed"><span>Garder le bouclier allumé</span><span class="ok">✓ fait ⌄</span></div>
+        </div>
+      </div></div>
+  </div>
+</section>
+
+<!-- 5. Optimisation -->
+<section>
+  <h2>5. Optimisation technique (sans impact visuel)</h2>
+  <ol class="opt-list">
+    <li><b>Taille APK</b> : SQLCipher limité à arm64-v8a + armeabi-v7a (26 Mo → environ 16 Mo attendus).</li>
+    <li><b>Stack</b> : AGP 8.7 → 9.x, Kotlin 2.0 → 2.2, Vico beta.3 → 2.x stable, BOM Compose à jour.</li>
+    <li><b>Compteur Accueil</b> : seule la ligne des heures se rafraîchit à chaque tick (pas tout l'écran) ; tick à la minute si on affiche « + 23 h 56 min ».</li>
+    <li><b>Service Bouclier</b> : mesure du temps par analyse d'écran, filtrage des événements inutiles.</li>
+    <li><b>Démarrage</b> : vérifier que le baseline profile est bien embarqué.</li>
+  </ol>
+</section>
+</div>
+
+<script>
+  function setTheme(dark) {
+    document.getElementById('root').classList.toggle('dark', dark);
+    document.getElementById('light').classList.toggle('on', !dark);
+    document.getElementById('dark').classList.toggle('on', dark);
+  }
+  // Heatmap: 6 weeks, mostly sober, one relapse before the current streak
+  const heat = document.getElementById('heat');
+  for (let i = 0; i < 42; i++) {
+    const cell = document.createElement('i');
+    if (i > 38) cell.className = 'f';
+    else if (i === 3) cell.className = 'r';
+    else if (i > 3) cell.className = (i % 3 === 0) ? 's2' : 's';
+    heat.appendChild(cell);
+  }
+</script>
+</body>
+</html>

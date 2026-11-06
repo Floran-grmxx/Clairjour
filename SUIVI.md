@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : **Bouclier Instagram v2** — reel touché dans une story autorisé (un seul), nouveau cache Explorer (thème clair/sombre, motivation, bouton « Chercher un compte »), désactivation sans dialogue, statut du service fiable (détecte le service tué par HyperOS) + carte Xiaomi (démarrage auto, batterie) + notification si le bouclier est coupé. Build debug + 58 tests unitaires OK. Bouclier validé sur le Redmi (relancé après fermeture des récentes grâce au démarrage auto) ; release v1.1.0 publiée. Prochaine priorité : usage réel quelques jours, puis Play Store (déclaration Accessibilité).
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. Prochaine priorité : **R1 optimisation technique**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -72,6 +72,16 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **B19** Corrections vues en mode diagnostic : fil non reconnu quand Instagram ne marque aucun onglet sélectionné ; faux swipe quand le nom d'auteur disparaît un instant (clé de reel = auteur uniquement)
 - [x] **B20** (2026-11-06) Appui long ×2 sur un reel en collaboration faisait sortir du reel : clé = premier nom d'utilisateur uniquement (« mediapart et anttonrouget » vs « Reel de mediapart. ») ; capture README du Bouclier refaite
 
+## 🎨 v1.2 — Refonte visuelle + optimisation (plan)
+- [ ] **R1** Optimisation : abiFilters ARM (APK 26 Mo), AGP 9 / Kotlin 2.2 / Vico stable, compteur à la minute, mesure service Bouclier, baseline profile
+- [ ] **R2** Thème : `surfaceContainer*` clair/sombre (barre du bas lavande/grise), interrupteurs éteints neutres
+- [ ] **R3** Accueil minimal (variante C) : barre de jalon continue + %, « + X h Y min », sans économies ni bouclier
+- [ ] **R4** Stats : cartes Série/Économisé, frise de badges, calendrier mensuel ‹ ›, humeur allégée
+- [ ] **R5** Journal : recherche texte, puces filtres, regroupement par semaine, bande couleur humeur
+- [ ] **R6** Bouclier : interrupteurs en premier, carte « Fiabilité » repliée quand tout est réglé
+- [ ] **R7** Pastille rouge sur l'onglet Paramètres si le Bouclier est coupé par le système
+- [ ] **R8** Vérif Redmi + captures + release v1.2.0 (versionCode 5)
+
 ## ⏳ Reste à faire
 - [ ] Installer et tester APK sur téléphone (`adb install app-debug.apk`)
 - [ ] Vérifier sur device : chiffrement backup (export + réimport avec passphrase), swipe-to-delete journal, undo rechute, Crisis screen (dial 3114), suppression addiction
@@ -81,6 +91,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **v0.3 features possibles** : auto-backup WorkManager (nécessite décision sur stockage passphrase), Vico 2.0.0 stable dès sortie, remontée des raisons perso sur HomeScreen
 
 ## 📋 Notes / gotchas
+- **Maquettes en localhost** : le port 8765 renvoyait 404 (déjà pris par un autre serveur) → servir `mockups/` sur un autre port (`python -m http.server 8790`).
+- **Barre de navigation lavande/grise** : `NavigationBar` utilise `surfaceContainer`, non défini dans `Theme.kt` → valeurs Material par défaut. Définir tous les `surfaceContainer*`.
 - **Bouclier — calibration** : la version debug embarque une télécommande (`adb shell am broadcast -a com.clairjour.shield.DEBUG -e command dump|back|click_id|click_label|scroll|tap|type|enter|rule_on|rule_off|shield_on|shield_off -e argument '...'`), logs sous le tag `ClairjourShield`. Le geste `tap` n'existe qu'en debug (`src/debug/res/xml/instagram_shield_service.xml` ajoute `canPerformGestures`).
 - **Bouclier — « Paramètre restreint »** (Android 13+, app hors Play Store) : l'interrupteur d'accessibilité est grisé → `adb shell cmd appops set com.clairjour.app.debug ACCESS_RESTRICTED_SETTINGS allow` (ou Infos appli → ⋮ → Autoriser les paramètres restreints).
 - **Bouclier — limites connues** : les vidéos qui se lancent toutes seules dans le fil ne sont pas bloquées (seulement à l'ouverture en plein écran) ; les libellés EN des onglets de recherche n'ont pas été vérifiés (interface testée en FR).
