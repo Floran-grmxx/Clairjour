@@ -52,29 +52,36 @@ class AddictionRepository(
                 personalReasons = personalReasons
             )
         )
-        // Backfill: if the user pre-dated their sobriety, milestones already reached at
-        // creation are inserted as *already seen* so we don't flash a celebration cascade
-        // on the first Home render. Only makes sense when milestoneDao is wired in.
-        val elapsedAtStart = Streak.daysSince(startDate, now)
-        if (milestoneDao != null && elapsedAtStart > 0) {
-            Milestones.reached(elapsedAtStart).forEach { m ->
-                milestoneDao.insert(
-                    MilestoneReachedEntity(
-                        id = "${id}_${m.days}",
-                        addictionId = id,
-                        milestoneDays = m.days,
-                        reachedAt = now,
-                        seenByUser = true
-                    )
-                )
-            }
-        }
+        // The user may pre-date their sobriety: no celebration cascade on the first Home render.
+        markPastMilestonesSeen(id, startDate, now)
         return id
     }
 
     suspend fun update(entity: AddictionEntity) {
         if (entity.isPrimary) dao.clearPrimary()
         dao.update(entity)
+        // Moving the start date back must not celebrate milestones that are already behind.
+        markPastMilestonesSeen(entity.id, entity.startDate, Clock.System.now())
+    }
+
+    /**
+     * Inserts milestones already reached at [now] as seen. Existing rows are kept
+     * (insert ignores conflicts), so milestones the user has not seen yet stay unseen.
+     */
+    private suspend fun markPastMilestonesSeen(addictionId: String, startDate: Instant, now: Instant) {
+        if (milestoneDao == null) return
+        val elapsedDays = Streak.daysSince(startDate, now)
+        Milestones.reached(elapsedDays).forEach { milestone ->
+            milestoneDao.insert(
+                MilestoneReachedEntity(
+                    id = "${addictionId}_${milestone.days}",
+                    addictionId = addictionId,
+                    milestoneDays = milestone.days,
+                    reachedAt = now,
+                    seenByUser = true
+                )
+            )
+        }
     }
 
     suspend fun markPrimary(id: String) {

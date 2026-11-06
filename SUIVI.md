@@ -80,6 +80,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R5** (2026-11-06) Journal : recherche en mémoire insensible à la casse et aux accents (`domain/JournalBrowsing.kt`, la recherche SQL `LIKE` supprimée), entrées regroupées par semaine (« Cette semaine », « Semaine dernière », « Semaine du … »), bande de couleur d'humeur (rouge/doré/vert sauge) + déclencheurs sur la carte, barre de recherche arrondie avec effacement. Bugs corrigés : bouton « + » sous la barre du bas (même cause que l'Accueil), fond rouge + poubelle visible à travers les cartes au repos (dessiné seulement pendant le glissement). 6 nouveaux tests (75 au total)
 - [x] **R6** (2026-11-06) Bouclier : statut → interrupteurs → section « Fiabilité » en bas ; carte « Garder le bouclier allumé » repliée avec « ✓ fait » quand `ShieldKeepAlive.isDone` (batterie sans restriction + démarrage auto non refusé), dépliée sinon ; 4 tests. Repli à vérifier sur le Redmi (émulateur : batterie non réglée → dépliée, attendu)
 - [x] **R7** (2026-11-06) Pastille rouge (`BadgedBox`) sur l'onglet Paramètres quand `ShieldKeepAlive.needsAttention` (bouclier voulu + `STOPPED_BY_SYSTEM`), état relu à chaque retour dans l'app + écoute accessibilité ; test unitaire. ⚠️ Non simulable sur émulateur (le système relance le service aussitôt ; `am force-stop` retire le service des réglages → état OFF) → à vérifier sur le Redmi
+- [x] **Bug jalons** (2026-11-06) Reculer la date « Sobre depuis » d'un domaine existant déclenchait une cascade de célébrations (1 jour, 3 jours…) : le remplissage « déjà vus » n'existait qu'à la création → `markPastMilestonesSeen` partagé par `create` et `update` (`AddictionRepositoryTest`). Vérifié sur émulateur
 - [ ] **R8** Vérif Redmi + captures + release v1.2.0 (versionCode 5)
 
 ## ⏳ Reste à faire
@@ -92,6 +93,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **v0.3 features possibles** : auto-backup WorkManager (nécessite décision sur stockage passphrase), Vico 2.0.0 stable dès sortie, remontée des raisons perso sur HomeScreen
 
 ## 📋 Notes / gotchas
+- **Jalons et date modifiée** : toute écriture qui recule `startDate` doit passer par `AddictionRepository.update` (remplissage des jalons passés comme vus), sinon l'Accueil les insère non vus → cascade de célébrations.
 - **`SwipeToDismissBox` + carte translucide** : le `backgroundContent` se voit à travers la carte au repos → ne le dessiner que si `dismissState.dismissDirection == EndToStart`.
 - **`adb shell input text`** : bloque ou sort de l'app avec certains caractères (virgule, apostrophe) → texte ASCII simple, espaces en `%s`, et `timeout` autour de chaque commande adb.
 - **Écran imbriqué avec son propre `Scaffold`** (Accueil) : le padding de la barre du bas (`contentPadding`) doit aller sur le `Scaffold` lui-même, sinon FAB et snackbar sont dessinés sous la barre.
