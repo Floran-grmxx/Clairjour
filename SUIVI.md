@@ -85,6 +85,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **R8** Vérif Redmi (repli carte Fiabilité, pastille si HyperOS coupe le bouclier, temps d'ouverture de la base, « evaluation took N ms ») puis push + release v1.2.0
 
 ## ⏳ Reste à faire
+- [ ] Voile de la célébration de jalon qui ne couvre pas le haut de l'écran (bande non assombrie sous la barre d'état)
 - [ ] Date « Sobre depuis » affichée en anglais (« Sep 20, 2026 ») dans l'écran Modifier un domaine en français
 - [ ] Installer et tester APK sur téléphone (`adb install app-debug.apk`)
 - [ ] Vérifier sur device : chiffrement backup (export + réimport avec passphrase), swipe-to-delete journal, undo rechute, Crisis screen (dial 3114), suppression addiction
