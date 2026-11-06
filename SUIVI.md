@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R1→R7 faits (APK 13,2 Mo, thème, Accueil, Stats, Journal, Bouclier, pastille) + 2 bugs corrigés (cascade de jalons, fausse pastille). Version 1.2.0 prête (captures + README faits), non poussée. Prochaine priorité : **vérif sur le Redmi, puis push + release v1.2.0**.
+**État** (2026-11-06, **v1.2.0 prête, non poussée**, versionCode 5) : refonte v1.2 terminée — APK release 26 → 13,2 Mo (AGP 9, Vico retiré, ARM seul), barre du bas et interrupteurs aux couleurs Clairjour, Accueil épuré, Stats avec calendrier + frise de jalons, Journal par semaine avec recherche sans accents, page Bouclier réordonnée, pastille « bouclier coupé » ; 5 bugs corrigés en route (bouton « Respire » et « + » invisibles, flash d'état vide, cascade de jalons, fausse pastille). 81 tests OK, captures + README à jour. Prochaine priorité : **vérif sur le Redmi, puis push + release v1.2.0**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
