@@ -94,9 +94,14 @@ class InstagramShieldService : AccessibilityService() {
             return
         }
         try {
+            val startNanos = System.nanoTime()
             val tree = AccessibilityTree.capture(root)
             val screen = InstagramScreenClassifier.classify(tree)
             val actions = engine.onScreen(screen, settings.activeRules)
+            if (BuildConfig.DEBUG) {
+                // Cost of one screen analysis, to keep the shield light on the battery.
+                Log.d(TAG, "evaluation took ${(System.nanoTime() - startNanos) / 1_000_000} ms")
+            }
             logDiagnostic(tree, screen, actions)
             if (BuildConfig.DEBUG && actions.isNotEmpty()) Log.d(TAG, "surface=${screen.surface} actions=$actions")
             apply(actions, root)

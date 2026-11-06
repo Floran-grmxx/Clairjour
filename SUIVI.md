@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. Prochaine priorité : **R1 optimisation technique**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). Prochaine priorité : **R2 couleurs du thème**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -73,7 +73,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **B20** (2026-11-06) Appui long ×2 sur un reel en collaboration faisait sortir du reel : clé = premier nom d'utilisateur uniquement (« mediapart et anttonrouget » vs « Reel de mediapart. ») ; capture README du Bouclier refaite
 
 ## 🎨 v1.2 — Refonte visuelle + optimisation (plan)
-- [ ] **R1** Optimisation : abiFilters ARM (APK 26 Mo), AGP 9 / Kotlin 2.2 / Vico stable, compteur à la minute, mesure service Bouclier, baseline profile
+- [x] **R1** (2026-11-06) Optimisation : AGP 9.1.1 + Gradle 9.3.1 + Kotlin 2.1.20 + KSP 2.0.1 + Room 2.7.0 + BOM 2025.01 (même combo qu'AlcoLimit, Kotlin 2.2 non retenu), Vico **retiré** (jamais utilisé, courbe en `Canvas`), abiFilters ARM → **APK release 26,0 → 13,2 Mo**, debug 48,5 → 34,7 Mo ; baseline profile vérifié dans l'APK ; durée d'analyse du Bouclier loguée en debug (« evaluation took N ms », à lire sur le Redmi en R8) ; compteur à la minute reporté à R3
 - [ ] **R2** Thème : `surfaceContainer*` clair/sombre (barre du bas lavande/grise), interrupteurs éteints neutres
 - [ ] **R3** Accueil minimal (variante C) : barre de jalon continue + %, « + X h Y min », sans économies ni bouclier
 - [ ] **R4** Stats : cartes Série/Économisé, frise de badges, calendrier mensuel ‹ ›, humeur allégée
@@ -91,6 +91,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **v0.3 features possibles** : auto-backup WorkManager (nécessite décision sur stockage passphrase), Vico 2.0.0 stable dès sortie, remontée des raisons perso sur HomeScreen
 
 ## 📋 Notes / gotchas
+- **AGP 9** : plugin `kotlin-android` retiré (Kotlin intégré à AGP), bloc `kotlinOptions` supprimé (jvmTarget suit `compileOptions`), `android.disallowKotlinSourceSets=false` requis pour KSP. Premier build ~10 min (téléchargement Gradle 9.3.1).
+- **`installDebug` → `No connected devices!`** (2026-11-06) : téléphone non branché. `adb` n'est pas dans le PATH bash : utiliser `"$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"`.
 - **Maquettes en localhost** : le port 8765 renvoyait 404 (déjà pris par un autre serveur) → servir `mockups/` sur un autre port (`python -m http.server 8790`).
 - **Barre de navigation lavande/grise** : `NavigationBar` utilise `surfaceContainer`, non défini dans `Theme.kt` → valeurs Material par défaut. Définir tous les `surfaceContainer*`.
 - **Bouclier — calibration** : la version debug embarque une télécommande (`adb shell am broadcast -a com.clairjour.shield.DEBUG -e command dump|back|click_id|click_label|scroll|tap|type|enter|rule_on|rule_off|shield_on|shield_off -e argument '...'`), logs sous le tag `ClairjourShield`. Le geste `tap` n'existe qu'en debug (`src/debug/res/xml/instagram_shield_service.xml` ajoute `canPerformGestures`).
