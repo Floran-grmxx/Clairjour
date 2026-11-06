@@ -84,14 +84,10 @@
 
     <!-- Stats -->
     <string name="stats_title">Statistics</string>
-    <string name="stats_total_days">Total sober days</string>
     <string name="stats_total_saved">Total saved</string>
-    <string name="stats_milestones_reached">Milestones reached</string>
     <string name="stats_mood_over_time">Mood over time</string>
     <string name="stats_current_streak">Current streak</string>
     <string name="stats_record_streak">Record streak</string>
-    <string name="stats_mood_avg_7d">Mood · 7d avg</string>
-    <string name="stats_mood_avg_30d">Mood · 30d avg</string>
     <string name="stats_top_triggers">Top triggers · 30 days</string>
 
     <!-- Settings -->
@@ -203,6 +199,26 @@
 
     <!-- Empty states -->
     <string name="stats_empty_mood">Write your first entry to see your mood evolve.</string>
+    <plurals name="stats_days_value">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="stats_record_days">
+        <item quantity="one">Record: %d day</item>
+        <item quantity="other">Record: %d days</item>
+    </plurals>
+    <plurals name="stats_milestone_in_days">
+        <item quantity="one">in %d day</item>
+        <item quantity="other">in %d days</item>
+    </plurals>
+    <string name="stats_saved_per_day">%1$s per day</string>
+    <string name="stats_calendar_sober">Sober</string>
+    <string name="stats_calendar_journal">Sober + journal</string>
+    <string name="stats_calendar_relapse">Relapse</string>
+    <string name="stats_mood_averages">Average · 7 days: %1$s · 30 days: %2$s</string>
+    <string name="cd_previous_month">Previous month</string>
+    <string name="cd_next_month">Next month</string>
+    <string name="cd_milestone_reached">reached</string>
 
     <!-- Pledge modal -->
     <string name="pledge_dialog_title">Today\'s pledge</string>

@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R3 fait (Accueil allégé + 3 bugs corrigés dont le bouton « Respire » invisible). Prochaine priorité : **R4 Stats (calendrier + badges)**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R4 fait (Stats : calendrier + frise de jalons). Prochaine priorité : **R5 Journal**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -76,13 +76,14 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R1** (2026-11-06) Optimisation : AGP 9.1.1 + Gradle 9.3.1 + Kotlin 2.1.20 + KSP 2.0.1 + Room 2.7.0 + BOM 2025.01 (même combo qu'AlcoLimit, Kotlin 2.2 non retenu), Vico **retiré** (jamais utilisé, courbe en `Canvas`), abiFilters ARM → **APK release 26,0 → 13,2 Mo**, debug 48,5 → 34,7 Mo ; baseline profile vérifié dans l'APK ; durée d'analyse du Bouclier loguée en debug (« evaluation took N ms », à lire sur le Redmi en R8) ; compteur à la minute reporté à R3
 - [x] **R2** (2026-11-06) Thème : `surfaceContainer*` définis en clair (ivoire) et sombre (bleu nuit), pastille de la barre du bas = `surfaceVariant` + icône `primary`, `ClairjourSwitch` commun (éteint neutre) sur les 4 écrans. Vérifié sur émulateur clair + sombre
 - [x] **R3** (2026-11-06) Accueil : compteur « + X h YY min » rafraîchi au début de chaque minute (au lieu de chaque seconde), barre de jalon continue (`gapSize = 0.dp`, sans point final) + pourcentage localisé. Bugs corrigés au passage : bouton « Respire » caché sous la barre du bas (padding de la barre appliqué au `Scaffold` de l'Accueil), état vide « Que veux-tu suivre ? » affiché pendant le chargement de la base (`state.loading` ignoré), « dans 1 jours » → plurals `home_next_milestone`. Vérifié sur émulateur
-- [ ] **R4** Stats : cartes Série/Économisé, frise de badges, calendrier mensuel ‹ ›, humeur allégée
+- [x] **R4** (2026-11-06) Stats : cartes Série (+ record) et Économisé (+ par jour), frise de jalons défilante (atteints ✓, prochain avec jours restants, ouverte sur le prochain), calendrier mensuel ‹ › (`domain/SobrietyCalendar.kt`, 6 tests), humeur + moyennes dans une carte, déclencheurs dans une carte. Vérifié sur émulateur (47 j, 517 €, nov./oct.)
 - [ ] **R5** Journal : recherche texte, puces filtres, regroupement par semaine, bande couleur humeur
 - [ ] **R6** Bouclier : interrupteurs en premier, carte « Fiabilité » repliée quand tout est réglé
 - [ ] **R7** Pastille rouge sur l'onglet Paramètres si le Bouclier est coupé par le système
 - [ ] **R8** Vérif Redmi + captures + release v1.2.0 (versionCode 5)
 
 ## ⏳ Reste à faire
+- [ ] Date « Sobre depuis » affichée en anglais (« Sep 20, 2026 ») dans l'écran Modifier un domaine en français
 - [ ] Installer et tester APK sur téléphone (`adb install app-debug.apk`)
 - [ ] Vérifier sur device : chiffrement backup (export + réimport avec passphrase), swipe-to-delete journal, undo rechute, Crisis screen (dial 3114), suppression addiction
 - [ ] Regénérer keystore avec `storePassword ≠ keyPassword` avant publication + déplacer `.jks` hors dossier projet vers `~/.android/keystores/`

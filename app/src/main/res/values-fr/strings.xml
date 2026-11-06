@@ -76,14 +76,10 @@
     <string name="journal_search">Rechercher</string>
 
     <string name="stats_title">Statistiques</string>
-    <string name="stats_total_days">Jours sobres cumulés</string>
     <string name="stats_total_saved">Total économisé</string>
-    <string name="stats_milestones_reached">Jalons atteints</string>
     <string name="stats_mood_over_time">Humeur dans le temps</string>
     <string name="stats_current_streak">Série actuelle</string>
     <string name="stats_record_streak">Record</string>
-    <string name="stats_mood_avg_7d">Humeur · moy. 7j</string>
-    <string name="stats_mood_avg_30d">Humeur · moy. 30j</string>
     <string name="stats_top_triggers">Déclencheurs récurrents · 30j</string>
 
     <string name="settings_title">Paramètres</string>
@@ -191,6 +187,26 @@
 
     <!-- États vides -->
     <string name="stats_empty_mood">Écris ta première entrée pour voir ton humeur évoluer.</string>
+    <plurals name="stats_days_value">
+        <item quantity="one">%d jour</item>
+        <item quantity="other">%d jours</item>
+    </plurals>
+    <plurals name="stats_record_days">
+        <item quantity="one">Record : %d jour</item>
+        <item quantity="other">Record : %d jours</item>
+    </plurals>
+    <plurals name="stats_milestone_in_days">
+        <item quantity="one">dans %d jour</item>
+        <item quantity="other">dans %d jours</item>
+    </plurals>
+    <string name="stats_saved_per_day">%1$s par jour</string>
+    <string name="stats_calendar_sober">Sobre</string>
+    <string name="stats_calendar_journal">Sobre + journal</string>
+    <string name="stats_calendar_relapse">Rechute</string>
+    <string name="stats_mood_averages">Moyenne · 7 jours : %1$s · 30 jours : %2$s</string>
+    <string name="cd_previous_month">Mois précédent</string>
+    <string name="cd_next_month">Mois suivant</string>
+    <string name="cd_milestone_reached">atteint</string>
 
     <!-- Modal engagement -->
     <string name="pledge_dialog_title">Engagement du jour</string>
