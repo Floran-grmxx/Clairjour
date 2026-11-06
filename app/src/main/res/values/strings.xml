@@ -311,6 +311,8 @@
     <string name="shield_status_stopped">Shield stopped by your phone</string>
     <string name="shield_restart">Restart</string>
     <string name="shield_master_body">Pauses them all at once, without touching Android settings</string>
+    <string name="shield_reliability_section">Reliability</string>
+    <string name="shield_keep_alive_done">✓ done</string>
     <string name="shield_keep_alive_title">Keep the shield running</string>
     <string name="shield_keep_alive_body">Some phones close apps in the background to save battery, which stops the shield. Change these settings once:</string>
     <string name="shield_keep_alive_body_xiaomi">On Xiaomi, Redmi and POCO, the system stops the shield to save battery, especially when you close the app from recent apps. Change these settings once:</string>

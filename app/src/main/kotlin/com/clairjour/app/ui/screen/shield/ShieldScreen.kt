@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -34,6 +36,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,13 +45,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.clairjour.app.ui.components.ClairjourSwitch
 import com.clairjour.app.BuildConfig
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
+import com.clairjour.app.shield.ShieldKeepAlive
 import com.clairjour.app.shield.ShieldRule
 import com.clairjour.app.shield.ShieldServiceState
 import com.clairjour.app.shield.ShieldServiceStatus
+import com.clairjour.app.ui.components.ClairjourSwitch
 import com.clairjour.app.ui.components.viewModelFactoryOf
 
 private val ShieldRule.titleRes: Int
@@ -154,16 +158,6 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
                 }
             )
             Spacer(Modifier.height(16.dp))
-            KeepAliveCard(
-                isXiaomi = ShieldServiceStatus.isXiaomi,
-                batteryUnrestricted = state.batteryUnrestricted,
-                autostartAllowed = state.autostartAllowed,
-                onAutostart = if (ShieldServiceStatus.hasAutostartSettings) {
-                    { ShieldServiceStatus.openAutostartSettings(context) }
-                } else null,
-                onBattery = { ShieldServiceStatus.openBatterySettings(context) }
-            )
-            Spacer(Modifier.height(16.dp))
 
             ShieldToggleRow(
                 title = stringResource(R.string.shield_master),
@@ -189,6 +183,28 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
                     onCheckedChange = { vm.onRuleChange(rule, it) }
                 )
             }
+
+            Spacer(Modifier.height(16.dp))
+            Text(
+                stringResource(R.string.shield_reliability_section).uppercase(),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(Modifier.height(8.dp))
+            KeepAliveCard(
+                isXiaomi = ShieldServiceStatus.isXiaomi,
+                batteryUnrestricted = state.batteryUnrestricted,
+                autostartAllowed = state.autostartAllowed,
+                done = ShieldKeepAlive.isDone(
+                    batteryUnrestricted = state.batteryUnrestricted,
+                    autostartAllowed = state.autostartAllowed,
+                    hasAutostartSettings = ShieldServiceStatus.hasAutostartSettings
+                ),
+                onAutostart = if (ShieldServiceStatus.hasAutostartSettings) {
+                    { ShieldServiceStatus.openAutostartSettings(context) }
+                } else null,
+                onBattery = { ShieldServiceStatus.openBatterySettings(context) }
+            )
 
             if (BuildConfig.DEBUG) {
                 Spacer(Modifier.height(12.dp))
@@ -253,16 +269,38 @@ private fun KeepAliveCard(
     isXiaomi: Boolean,
     batteryUnrestricted: Boolean,
     autostartAllowed: Boolean?,
+    done: Boolean,
     onAutostart: (() -> Unit)?,
     onBattery: () -> Unit
 ) {
+    // Folded once everything is set; a missing setting always unfolds it.
+    var expanded by rememberSaveable(done) { mutableStateOf(!done) }
     Surface(
+        onClick = { expanded = !expanded },
         shape = RoundedCornerShape(12.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(Modifier.padding(16.dp)) {
-            Text(stringResource(R.string.shield_keep_alive_title), style = MaterialTheme.typography.titleMedium)
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    stringResource(R.string.shield_keep_alive_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.weight(1f)
+                )
+                if (done) {
+                    Text(
+                        stringResource(R.string.shield_keep_alive_done),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                }
+                Icon(
+                    if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
+                    contentDescription = null
+                )
+            }
+            if (!expanded) return@Column
             Spacer(Modifier.height(4.dp))
             Text(
                 stringResource(
