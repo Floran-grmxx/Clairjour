@@ -1,6 +1,5 @@
 package com.clairjour.app.ui.screen.shield
 
-import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.clairjour.app.BuildConfig
 import com.clairjour.app.R
@@ -98,13 +96,7 @@ fun ShieldScreen(container: AppContainer, onBack: () -> Unit) {
 
     // The user enables the service in Android settings: re-check whenever the screen comes back,
     // and live while it is shown (HyperOS can kill the service at any time).
-    LifecycleResumeEffect(Unit) {
-        refreshStatus()
-        val accessibilityManager = context.getSystemService(AccessibilityManager::class.java)
-        val listener = AccessibilityManager.AccessibilityStateChangeListener { refreshStatus() }
-        accessibilityManager?.addAccessibilityStateChangeListener(listener)
-        onPauseOrDispose { accessibilityManager?.removeAccessibilityStateChangeListener(listener) }
-    }
+    ShieldStatusEffect(onRefresh = refreshStatus)
 
     if (showDisclosure) {
         AlertDialog(

@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R1→R7 faits (APK 13,2 Mo, thème, Accueil, Stats, Journal, Bouclier, pastille). Prochaine priorité : **R8 vérif Redmi + captures + release v1.2.0**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R1→R7 faits (APK 13,2 Mo, thème, Accueil, Stats, Journal, Bouclier, pastille) + 2 bugs corrigés (cascade de jalons, fausse pastille). Version 1.2.0 prête (captures + README faits), non poussée. Prochaine priorité : **vérif sur le Redmi, puis push + release v1.2.0**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -81,7 +81,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R6** (2026-11-06) Bouclier : statut → interrupteurs → section « Fiabilité » en bas ; carte « Garder le bouclier allumé » repliée avec « ✓ fait » quand `ShieldKeepAlive.isDone` (batterie sans restriction + démarrage auto non refusé), dépliée sinon ; 4 tests. Repli à vérifier sur le Redmi (émulateur : batterie non réglée → dépliée, attendu)
 - [x] **R7** (2026-11-06) Pastille rouge (`BadgedBox`) sur l'onglet Paramètres quand `ShieldKeepAlive.needsAttention` (bouclier voulu + `STOPPED_BY_SYSTEM`), état relu à chaque retour dans l'app + écoute accessibilité ; test unitaire. ⚠️ Non simulable sur émulateur (le système relance le service aussitôt ; `am force-stop` retire le service des réglages → état OFF) → à vérifier sur le Redmi
 - [x] **Bug jalons** (2026-11-06) Reculer la date « Sobre depuis » d'un domaine existant déclenchait une cascade de célébrations (1 jour, 3 jours…) : le remplissage « déjà vus » n'existait qu'à la création → `markPastMilestonesSeen` partagé par `create` et `update` (`AddictionRepositoryTest`). Vérifié sur émulateur
-- [ ] **R8** Vérif Redmi + captures + release v1.2.0 (versionCode 5)
+- [x] **R8a** (2026-11-06) Faux positif de la pastille corrigé : l'écouteur d'accessibilité se déclenche avant qu'Android lie le service → `ShieldStatusEffect` relit l'état 2 s après chaque changement (Accueil + page Bouclier). Pastille vue à l'écran (rendu OK). Captures `docs/screenshots/` refaites (émulateur Pixel_7, mode démo, données fictives 47 j / 11 €), README à jour, version **1.2.0 (versionCode 5)**
+- [ ] **R8** Vérif Redmi (repli carte Fiabilité, pastille si HyperOS coupe le bouclier, temps d'ouverture de la base, « evaluation took N ms ») puis push + release v1.2.0
 
 ## ⏳ Reste à faire
 - [ ] Date « Sobre depuis » affichée en anglais (« Sep 20, 2026 ») dans l'écran Modifier un domaine en français

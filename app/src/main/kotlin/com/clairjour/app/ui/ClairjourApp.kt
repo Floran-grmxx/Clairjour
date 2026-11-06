@@ -1,6 +1,5 @@
 package com.clairjour.app.ui
 
-import android.view.accessibility.AccessibilityManager
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -28,7 +27,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
-import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -40,6 +38,7 @@ import com.clairjour.app.shield.ShieldServiceState
 import com.clairjour.app.shield.ShieldServiceStatus
 import com.clairjour.app.ui.navigation.ClairjourNavHost
 import com.clairjour.app.ui.navigation.Destinations
+import com.clairjour.app.ui.screen.shield.ShieldStatusEffect
 
 private data class BottomTab(
     val route: String,
@@ -64,15 +63,7 @@ fun ClairjourApp(container: AppContainer) {
     val context = LocalContext.current
     val shieldSettings by container.settingsRepository.shieldSettingsFlow.collectAsState(initial = null)
     var shieldServiceState by remember { mutableStateOf(ShieldServiceState.OFF) }
-    LifecycleResumeEffect(Unit) {
-        shieldServiceState = ShieldServiceStatus.state(context)
-        val accessibilityManager = context.getSystemService(AccessibilityManager::class.java)
-        val listener = AccessibilityManager.AccessibilityStateChangeListener {
-            shieldServiceState = ShieldServiceStatus.state(context)
-        }
-        accessibilityManager?.addAccessibilityStateChangeListener(listener)
-        onPauseOrDispose { accessibilityManager?.removeAccessibilityStateChangeListener(listener) }
-    }
+    ShieldStatusEffect { shieldServiceState = ShieldServiceStatus.state(context) }
     val shieldNeedsAttention = ShieldKeepAlive.needsAttention(
         serviceState = shieldServiceState,
         shieldWanted = shieldSettings?.enabled == true
