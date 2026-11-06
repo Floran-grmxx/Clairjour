@@ -36,7 +36,6 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
@@ -54,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.clairjour.app.ui.components.ClairjourSwitch
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
 import com.clairjour.app.domain.AddictionType
@@ -248,7 +248,7 @@ fun AddictionEditScreen(
 
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.addiction_edit_primary), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                Switch(checked = state.isPrimary, onCheckedChange = vm::setPrimary)
+                ClairjourSwitch(checked = state.isPrimary, onCheckedChange = vm::setPrimary)
             }
 
             Spacer(Modifier.height(24.dp))

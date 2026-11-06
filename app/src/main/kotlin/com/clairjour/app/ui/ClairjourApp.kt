@@ -9,7 +9,9 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -76,7 +78,12 @@ fun ClairjourApp(container: AppContainer) {
                                 }
                             },
                             icon = { Icon(tab.icon, contentDescription = null) },
-                            label = { Text(stringResource(tab.labelRes)) }
+                            label = { Text(stringResource(tab.labelRes)) },
+                            colors = NavigationBarItemDefaults.colors(
+                                selectedIconColor = MaterialTheme.colorScheme.primary,
+                                selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                                indicatorColor = MaterialTheme.colorScheme.surfaceVariant
+                            )
                         )
                     }
                 }

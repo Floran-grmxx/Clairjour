@@ -19,6 +19,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -85,4 +87,25 @@ fun MilestoneProgress(
             trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
     }
+}
+
+/** Switch with Clairjour colors: a neutral off state instead of Material's gold-bordered lavender. */
+@Composable
+fun ClairjourSwitch(
+    checked: Boolean,
+    onCheckedChange: ((Boolean) -> Unit)?,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
+) {
+    Switch(
+        checked = checked,
+        onCheckedChange = onCheckedChange,
+        modifier = modifier,
+        enabled = enabled,
+        colors = SwitchDefaults.colors(
+            uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            uncheckedBorderColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+            uncheckedThumbColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    )
 }

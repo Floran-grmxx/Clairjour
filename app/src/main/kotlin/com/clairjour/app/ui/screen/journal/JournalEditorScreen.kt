@@ -26,7 +26,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -40,6 +39,7 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.clairjour.app.ui.components.ClairjourSwitch
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
 import com.clairjour.app.ui.components.viewModelFactoryOf
@@ -162,7 +162,7 @@ fun JournalEditorScreen(
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f)
                 )
-                Switch(
+                ClairjourSwitch(
                     checked = state.hadCravings,
                     onCheckedChange = vm::setCravings
                 )

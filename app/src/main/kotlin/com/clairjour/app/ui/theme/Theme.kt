@@ -33,6 +33,11 @@ private val LightScheme = lightColorScheme(
     onSurfaceVariant = ClairjourInkSoft,
     outline = ClairjourGoldMuted,
     outlineVariant = ClairjourIvoryDim,
+    surfaceContainerLowest = ClairjourIvoryLightest,
+    surfaceContainerLow = ClairjourIvoryLow,
+    surfaceContainer = ClairjourIvoryContainer,
+    surfaceContainerHigh = ClairjourIvoryDim,
+    surfaceContainerHighest = ClairjourIvoryHighest,
     error = ClairjourError,
     onError = ClairjourIvory
 )
@@ -56,6 +61,11 @@ private val DarkScheme = darkColorScheme(
     onSurfaceVariant = ClairjourIvoryDim,
     outline = ClairjourGoldMuted,
     outlineVariant = ClairjourBlue,
+    surfaceContainerLowest = ClairjourBlueLowest,
+    surfaceContainerLow = ClairjourBlueLow,
+    surfaceContainer = ClairjourBlueDark,
+    surfaceContainerHigh = ClairjourBlueHigh,
+    surfaceContainerHighest = ClairjourBlue,
     error = ClairjourError,
     onError = ClairjourIvory
 )

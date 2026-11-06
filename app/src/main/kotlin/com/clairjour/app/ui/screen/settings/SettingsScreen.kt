@@ -33,7 +33,6 @@ import androidx.compose.material3.OutlinedTextField
 import android.net.Uri
 import android.widget.Toast
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -52,6 +51,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.clairjour.app.ui.components.ClairjourSwitch
 import com.clairjour.app.BuildConfig
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
@@ -384,7 +384,7 @@ private fun ToggleRow(label: String, checked: Boolean, onCheckedChange: (Boolean
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(label, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        ClairjourSwitch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 

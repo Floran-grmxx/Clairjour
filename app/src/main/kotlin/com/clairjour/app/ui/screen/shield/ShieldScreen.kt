@@ -27,7 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.clairjour.app.ui.components.ClairjourSwitch
 import com.clairjour.app.BuildConfig
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
@@ -335,6 +335,6 @@ private fun ShieldToggleRow(
             }
         }
         Spacer(Modifier.width(12.dp))
-        Switch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
+        ClairjourSwitch(checked = checked, onCheckedChange = onCheckedChange, enabled = enabled)
     }
 }

@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). Prochaine priorité : **R2 couleurs du thème**.
+**État** (2026-11-06, v1.1.1, versionCode 4) : Bouclier Instagram v2 publié (release v1.1.1). **v1.2 cadrée** : refonte visuelle (Accueil minimal, Stats calendrier + badges, Journal recherche, Bouclier réordonné, couleurs de thème corrigées) + optimisation (APK, stack, compteur). Spec : `docs/superpowers/specs/2026-11-06-v1.2-refonte-design.md`, maquettes : `mockups/v1.2-refonte.html`. R1 fait (APK release 13,2 Mo). R2 fait (barre du bas + interrupteurs aux couleurs Clairjour). Prochaine priorité : **R3 Accueil minimal**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -74,7 +74,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 
 ## 🎨 v1.2 — Refonte visuelle + optimisation (plan)
 - [x] **R1** (2026-11-06) Optimisation : AGP 9.1.1 + Gradle 9.3.1 + Kotlin 2.1.20 + KSP 2.0.1 + Room 2.7.0 + BOM 2025.01 (même combo qu'AlcoLimit, Kotlin 2.2 non retenu), Vico **retiré** (jamais utilisé, courbe en `Canvas`), abiFilters ARM → **APK release 26,0 → 13,2 Mo**, debug 48,5 → 34,7 Mo ; baseline profile vérifié dans l'APK ; durée d'analyse du Bouclier loguée en debug (« evaluation took N ms », à lire sur le Redmi en R8) ; compteur à la minute reporté à R3
-- [ ] **R2** Thème : `surfaceContainer*` clair/sombre (barre du bas lavande/grise), interrupteurs éteints neutres
+- [x] **R2** (2026-11-06) Thème : `surfaceContainer*` définis en clair (ivoire) et sombre (bleu nuit), pastille de la barre du bas = `surfaceVariant` + icône `primary`, `ClairjourSwitch` commun (éteint neutre) sur les 4 écrans. Vérifié sur émulateur clair + sombre
 - [ ] **R3** Accueil minimal (variante C) : barre de jalon continue + %, « + X h Y min », sans économies ni bouclier
 - [ ] **R4** Stats : cartes Série/Économisé, frise de badges, calendrier mensuel ‹ ›, humeur allégée
 - [ ] **R5** Journal : recherche texte, puces filtres, regroupement par semaine, bande couleur humeur
@@ -91,6 +91,9 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [ ] **v0.3 features possibles** : auto-backup WorkManager (nécessite décision sur stockage passphrase), Vico 2.0.0 stable dès sortie, remontée des raisons perso sur HomeScreen
 
 ## 📋 Notes / gotchas
+- **Émulateur + abiFilters ARM** : l'émulateur Pixel_7 (x86_64) lance quand même l'app grâce à la traduction ARM (abilist `x86_64,arm64-v8a`), premier démarrage lent (splash quelques secondes).
+- **adb depuis Git Bash** : `/sdcard/...` est converti en chemin Windows → `export MSYS_NO_PATHCONV=1`. `uiautomator dump` peut se bloquer : l'encadrer d'un `timeout 30`.
+- **Barre de progression « coupée » avec un point** : style par défaut du `LinearProgressIndicator` M3 récent (gap + stop indicator) → `gapSize = 0.dp`, `drawStopIndicator = {}`.
 - **AGP 9** : plugin `kotlin-android` retiré (Kotlin intégré à AGP), bloc `kotlinOptions` supprimé (jvmTarget suit `compileOptions`), `android.disallowKotlinSourceSets=false` requis pour KSP. Premier build ~10 min (téléchargement Gradle 9.3.1).
 - **`installDebug` → `No connected devices!`** (2026-11-06) : téléphone non branché. `adb` n'est pas dans le PATH bash : utiliser `"$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"`.
 - **Maquettes en localhost** : le port 8765 renvoyait 404 (déjà pris par un autre serveur) → servir `mockups/` sur un autre port (`python -m http.server 8790`).
