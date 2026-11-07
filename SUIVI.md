@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-07, **v1.2.0 publiée**, versionCode 5) : refonte v1.2 en ligne — APK release 26 → 13,2 Mo, Accueil épuré, Stats calendrier + jalons, Journal par semaine, Bouclier réordonné, pastille « bouclier coupé ». Vérifiée sur le Redmi (installation par-dessus la 1.1 sans perte, ouverture 0,4 s, analyse du bouclier 5–100 ms, aucun crash). Prochaine priorité : **contrôler à l'œil le repli de la carte Fiabilité et la pastille la prochaine fois que HyperOS coupe le bouclier**.
+**État** (2026-11-07, **v1.2.1 publiée**, versionCode 6) : refonte v1.2 en ligne + allègement — écran « Respire » supprimé, numéros d'écoute dans Paramètres, grands titres des onglets retirés. Vérifiée sur le Redmi (ouverture 0,4 s, analyse du bouclier 5–100 ms, aucun crash). Prochaine priorité : **décider du sort de « Mes raisons »** (plus affiché nulle part) et contrôler à l'œil le repli de la carte Fiabilité.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -84,6 +84,7 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R8a** (2026-11-06) Faux positif de la pastille corrigé : l'écouteur d'accessibilité se déclenche avant qu'Android lie le service → `ShieldStatusEffect` relit l'état 2 s après chaque changement (Accueil + page Bouclier). Pastille vue à l'écran (rendu OK). Captures `docs/screenshots/` refaites (émulateur Pixel_7, mode démo, données fictives 47 j / 11 €), README à jour, version **1.2.0 (versionCode 5)**
 - [x] **R8** (2026-11-07) Redmi : 1.2.0 debug installée par-dessus la 1.1 (données conservées), démarrage 402 ms, « evaluation took » 5–100 ms (dump diagnostic debug compris), bouclier toujours actif, aucun crash ; push + release v1.2.0
 - [x] **U1** (2026-11-07) Écran « Respire » supprimé (bouton de l'Accueil, route, `ui/screen/crisis/`) ; numéros d'écoute (3114, Drogues Info Service) déplacés en bas de Paramètres (`ui/components/HelplineRow.kt`) ; grands titres en haut de Journal / Stats / Paramètres retirés (la barre du bas les nomme déjà)
+- [x] **U2** (2026-11-07) Release v1.2.1 (versionCode 6) : APK signé 13,2 Mo, SHA-256 `804b7f94…4916a`
 - [ ] « Mes raisons » (fiche d'un domaine) n'est plus affiché nulle part depuis la suppression de « Respire » → décider : l'afficher ailleurs ou retirer le champ
 - [ ] Contrôle visuel sur le Redmi : repli de la carte Fiabilité + pastille quand HyperOS coupe vraiment le bouclier (non fait : téléphone en cours d'utilisation)
 
