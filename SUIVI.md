@@ -140,3 +140,4 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 ```powershell
 adb install "C:\users\flora\documents\dev\Application\Clair jour\app\build\outputs\apk\debug\app-debug.apk"
 ```
+- **`gh release create` coupé par le réseau** (2026-11-07, v1.2.1) : `lookup api.github.com: no such host` pendant l'envoi → release laissée en brouillon sans APK ni tag. Réparation : `gh release upload v<x> <apk> --clobber` puis `gh release edit v<x> --draft=false --target main`.
