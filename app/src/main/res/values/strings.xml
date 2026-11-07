@@ -84,7 +84,6 @@
     <string name="cd_clear_search">Clear search</string>
 
     <!-- Stats -->
-    <string name="stats_title">Statistics</string>
     <string name="stats_total_saved">Total saved</string>
     <string name="stats_mood_over_time">Mood over time</string>
     <string name="stats_current_streak">Current streak</string>
@@ -92,7 +91,6 @@
     <string name="stats_top_triggers">Top triggers · 30 days</string>
 
     <!-- Settings -->
-    <string name="settings_title">Settings</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
@@ -174,15 +172,10 @@
     <string name="snack_addiction_saved">Area saved</string>
     <string name="snack_journal_saved">Entry saved</string>
 
-    <!-- Crisis / panic screen -->
-    <string name="crisis_title">Take a breath</string>
-    <string name="crisis_intro">You\'re here because a craving hit. That\'s okay — it\'ll pass. Breathe with the circle, read your reasons, or reach out.</string>
-    <string name="crisis_breathe">Breathe</string>
-    <string name="crisis_contact_3114_label">3114 · National suicide-prevention line</string>
-    <string name="crisis_contact_addiction_label">Drogues Info Service</string>
-    <string name="crisis_call">Call</string>
-    <string name="crisis_reminder">You\'ve done it before. You can do it again — one breath at a time.</string>
-    <string name="cd_crisis_fab">Open crisis support</string>
+    <!-- Help lines (Settings) -->
+    <string name="helpline_3114_label">3114 · National suicide-prevention line</string>
+    <string name="helpline_addiction_label">Drogues Info Service</string>
+    <string name="helpline_call">Call</string>
 
     <!-- Personal reasons -->
     <string name="addiction_edit_reasons_title">Your reasons (why)</string>
@@ -319,4 +312,15 @@
     <string name="notif_channel_shield_desc">Warns you when Android switches the shield off</string>
     <string name="notif_shield_stopped_title">Instagram shield is off</string>
     <string name="notif_shield_stopped_body">Android switched it off in the background. Tap to turn it back on.</string>
+    <!-- Section headers -->
+    <string name="journal_week_current">This week</string>
+    <string name="journal_week_previous">Last week</string>
+    <string name="journal_week_of">Week of %1$s</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_backup">Backup</string>
+    <string name="settings_addictions">Areas tracked</string>
+    <string name="settings_about">About</string>
+    <string name="helpline_title">Help lines (France)</string>
 </resources>

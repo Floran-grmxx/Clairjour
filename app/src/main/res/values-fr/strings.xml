@@ -76,14 +76,12 @@
     <string name="journal_search">Rechercher</string>
     <string name="cd_clear_search">Effacer la recherche</string>
 
-    <string name="stats_title">Statistiques</string>
     <string name="stats_total_saved">Total économisé</string>
     <string name="stats_mood_over_time">Humeur dans le temps</string>
     <string name="stats_current_streak">Série actuelle</string>
     <string name="stats_record_streak">Record</string>
     <string name="stats_top_triggers">Déclencheurs récurrents · 30j</string>
 
-    <string name="settings_title">Paramètres</string>
     <string name="settings_theme_system">Système</string>
     <string name="settings_theme_light">Clair</string>
     <string name="settings_theme_dark">Sombre</string>
@@ -163,14 +161,9 @@
     <string name="snack_journal_saved">Entrée enregistrée</string>
 
     <!-- Écran crise / panic -->
-    <string name="crisis_title">Respire</string>
-    <string name="crisis_intro">Tu es ici parce qu\'une envie t\'a rattrapé. C\'est OK — elle va passer. Respire avec le cercle, relis tes raisons, ou appelle.</string>
-    <string name="crisis_breathe">Respire</string>
-    <string name="crisis_contact_3114_label">3114 · Ligne nationale prévention suicide</string>
-    <string name="crisis_contact_addiction_label">Drogues Info Service</string>
-    <string name="crisis_call">Appeler</string>
-    <string name="crisis_reminder">Tu l\'as déjà fait. Tu peux le refaire — une respiration à la fois.</string>
-    <string name="cd_crisis_fab">Ouvrir l\'aide en cas d\'envie</string>
+    <string name="helpline_3114_label">3114 · Ligne nationale prévention suicide</string>
+    <string name="helpline_addiction_label">Drogues Info Service</string>
+    <string name="helpline_call">Appeler</string>
 
     <!-- Raisons personnelles -->
     <string name="addiction_edit_reasons_title">Tes raisons (pourquoi)</string>
@@ -307,4 +300,15 @@
     <string name="notif_channel_shield_desc">Te prévient quand Android coupe le bouclier</string>
     <string name="notif_shield_stopped_title">Le bouclier Instagram est coupé</string>
     <string name="notif_shield_stopped_body">Android l\'a désactivé en arrière-plan. Touche pour le réactiver.</string>
+    <!-- Section headers -->
+    <string name="journal_week_current">Cette semaine</string>
+    <string name="journal_week_previous">Semaine dernière</string>
+    <string name="journal_week_of">Semaine du %1$s</string>
+    <string name="settings_language">Langue</string>
+    <string name="settings_theme">Thème</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_backup">Sauvegarde</string>
+    <string name="settings_addictions">Domaines suivis</string>
+    <string name="settings_about">À propos</string>
+    <string name="helpline_title">Numéros d\'écoute (France)</string>
 </resources>

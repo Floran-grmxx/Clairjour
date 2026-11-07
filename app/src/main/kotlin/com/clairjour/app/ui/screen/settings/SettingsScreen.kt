@@ -161,10 +161,8 @@ fun SettingsScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(20.dp))
 
-        Section {
+        Section(title = stringResource(R.string.settings_language)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppLanguage.entries.forEach { lang ->
                     FilterChip(
@@ -187,7 +185,7 @@ fun SettingsScreen(
             }
         }
 
-        Section {
+        Section(title = stringResource(R.string.settings_theme)) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
                     selected = state.themeMode == ThemeMode.SYSTEM,
@@ -207,7 +205,7 @@ fun SettingsScreen(
             }
         }
 
-        Section {
+        Section(title = stringResource(R.string.settings_notifications)) {
             ToggleRow(
                 label = stringResource(R.string.settings_notif_pledge),
                 checked = state.notifPledgeEnabled,
@@ -249,7 +247,7 @@ fun SettingsScreen(
             }
         }
 
-        Section {
+        Section(title = stringResource(R.string.shield_title)) {
             Surface(
                 onClick = onOpenShield,
                 shape = RoundedCornerShape(12.dp),
@@ -276,7 +274,7 @@ fun SettingsScreen(
             }
         }
 
-        Section {
+        Section(title = stringResource(R.string.settings_backup)) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -301,7 +299,7 @@ fun SettingsScreen(
             }
         }
 
-        Section {
+        Section(title = stringResource(R.string.settings_addictions)) {
             state.addictions.forEach { addiction ->
                 Surface(
                     onClick = { onEditAddiction(addiction.id) },
@@ -351,11 +349,11 @@ fun SettingsScreen(
             }
         }
 
-        Section {
+        Section(title = stringResource(R.string.helpline_title)) {
             HelplineList()
         }
 
-        Section {
+        Section(title = stringResource(R.string.settings_about)) {
             Text(
                 "Clairjour · v${BuildConfig.VERSION_NAME}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -368,9 +366,14 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun Section(content: @Composable () -> Unit) {
+private fun Section(title: String, content: @Composable () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Spacer(Modifier.height(4.dp))
+        Text(
+            title.uppercase(),
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.secondary
+        )
+        Spacer(Modifier.height(10.dp))
         content()
         Spacer(Modifier.height(6.dp))
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

@@ -253,7 +253,7 @@ fun AddictionEditScreen(
 
             Spacer(Modifier.height(24.dp))
 
-            // Personal reasons section — displayed on CrisisScreen when a craving hits.
+            // Personal reasons section.
             Text(
                 stringResource(R.string.addiction_edit_reasons_title),
                 style = MaterialTheme.typography.titleMedium

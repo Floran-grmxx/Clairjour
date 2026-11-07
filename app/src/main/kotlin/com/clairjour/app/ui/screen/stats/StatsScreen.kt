@@ -95,8 +95,6 @@ fun StatsScreen(
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 20.dp, vertical = 12.dp)
     ) {
-        Text(stringResource(R.string.stats_title), style = MaterialTheme.typography.headlineMedium)
-        Spacer(Modifier.height(20.dp))
 
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
             StatCard(

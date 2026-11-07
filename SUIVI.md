@@ -83,7 +83,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **Bug jalons** (2026-11-06) Reculer la date « Sobre depuis » d'un domaine existant déclenchait une cascade de célébrations (1 jour, 3 jours…) : le remplissage « déjà vus » n'existait qu'à la création → `markPastMilestonesSeen` partagé par `create` et `update` (`AddictionRepositoryTest`). Vérifié sur émulateur
 - [x] **R8a** (2026-11-06) Faux positif de la pastille corrigé : l'écouteur d'accessibilité se déclenche avant qu'Android lie le service → `ShieldStatusEffect` relit l'état 2 s après chaque changement (Accueil + page Bouclier). Pastille vue à l'écran (rendu OK). Captures `docs/screenshots/` refaites (émulateur Pixel_7, mode démo, données fictives 47 j / 11 €), README à jour, version **1.2.0 (versionCode 5)**
 - [x] **R8** (2026-11-07) Redmi : 1.2.0 debug installée par-dessus la 1.1 (données conservées), démarrage 402 ms, « evaluation took » 5–100 ms (dump diagnostic debug compris), bouclier toujours actif, aucun crash ; push + release v1.2.0
-- [x] **U1** (2026-11-07) Numéros d'écoute (3114, Drogues Info Service) retirés de « Respire », déplacés en bas de Paramètres (`ui/components/HelplineRow.kt`) ; titres de catégorie retirés partout (Paramètres, Respire, Journal → liste continue)
+- [x] **U1** (2026-11-07) Écran « Respire » supprimé (bouton de l'Accueil, route, `ui/screen/crisis/`) ; numéros d'écoute (3114, Drogues Info Service) déplacés en bas de Paramètres (`ui/components/HelplineRow.kt`) ; grands titres en haut de Journal / Stats / Paramètres retirés (la barre du bas les nomme déjà)
+- [ ] « Mes raisons » (fiche d'un domaine) n'est plus affiché nulle part depuis la suppression de « Respire » → décider : l'afficher ailleurs ou retirer le champ
 - [ ] Contrôle visuel sur le Redmi : repli de la carte Fiabilité + pastille quand HyperOS coupe vraiment le bouclier (non fait : téléphone en cours d'utilisation)
 
 ## ⏳ Reste à faire

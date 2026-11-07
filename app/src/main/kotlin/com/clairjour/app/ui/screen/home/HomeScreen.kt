@@ -25,14 +25,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -86,8 +84,7 @@ fun HomeScreen(
     container: AppContainer,
     contentPadding: PaddingValues,
     onAddAddiction: () -> Unit,
-    onOpenJournalEditor: () -> Unit,
-    onOpenCrisis: (String?) -> Unit
+    onOpenJournalEditor: () -> Unit
 ) {
     val vm: HomeViewModel = viewModel(
         factory = viewModelFactoryOf {
@@ -111,26 +108,10 @@ fun HomeScreen(
     val relapseUndoText = stringResource(R.string.relapse_undo)
     val relapseAlreadyTodayText = stringResource(R.string.relapse_already_today)
 
-    // The app's bottom bar padding goes on the Scaffold so the FAB and snackbar sit above it.
+    // The app's bottom bar padding goes on the Scaffold so the snackbar sits above it.
     Scaffold(
         modifier = Modifier.padding(contentPadding),
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        floatingActionButton = {
-            if (state.current != null) {
-                ExtendedFloatingActionButton(
-                    onClick = { onOpenCrisis(state.current?.id) },
-                    containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onError,
-                    icon = {
-                        Icon(
-                            Icons.Filled.Favorite,
-                            contentDescription = stringResource(R.string.cd_crisis_fab)
-                        )
-                    },
-                    text = { Text(stringResource(R.string.crisis_breathe)) }
-                )
-            }
-        },
         containerColor = MaterialTheme.colorScheme.background
     ) { scaffoldPadding ->
     Box(modifier = Modifier.fillMaxSize().padding(scaffoldPadding)) {

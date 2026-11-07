@@ -28,9 +28,9 @@ import com.clairjour.app.R
 @Composable
 fun HelplineList() {
     Column {
-        HelplineRow(label = stringResource(R.string.crisis_contact_3114_label), number = "3114")
+        HelplineRow(label = stringResource(R.string.helpline_3114_label), number = "3114")
         Spacer(Modifier.padding(4.dp))
-        HelplineRow(label = stringResource(R.string.crisis_contact_addiction_label), number = "0800235236")
+        HelplineRow(label = stringResource(R.string.helpline_addiction_label), number = "0800235236")
     }
 }
 
@@ -59,7 +59,7 @@ private fun HelplineRow(label: String, number: String) {
         ) {
             Icon(Icons.Filled.Phone, contentDescription = null, modifier = Modifier.size(18.dp))
             Spacer(Modifier.width(6.dp))
-            Text(stringResource(R.string.crisis_call))
+            Text(stringResource(R.string.helpline_call))
         }
     }
 }
