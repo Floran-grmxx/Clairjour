@@ -1,7 +1,7 @@
 # Clairjour — SUIVI.md
 
 ## 🧭 Ligne directrice
-**État** (2026-11-06, **v1.2.0 prête, non poussée**, versionCode 5) : refonte v1.2 terminée — APK release 26 → 13,2 Mo (AGP 9, Vico retiré, ARM seul), barre du bas et interrupteurs aux couleurs Clairjour, Accueil épuré, Stats avec calendrier + frise de jalons, Journal par semaine avec recherche sans accents, page Bouclier réordonnée, pastille « bouclier coupé » ; 5 bugs corrigés en route (bouton « Respire » et « + » invisibles, flash d'état vide, cascade de jalons, fausse pastille). 81 tests OK, captures + README à jour. Prochaine priorité : **vérif sur le Redmi, puis push + release v1.2.0**.
+**État** (2026-11-07, **v1.2.0 publiée**, versionCode 5) : refonte v1.2 en ligne — APK release 26 → 13,2 Mo, Accueil épuré, Stats calendrier + jalons, Journal par semaine, Bouclier réordonné, pastille « bouclier coupé ». Vérifiée sur le Redmi (installation par-dessus la 1.1 sans perte, ouverture 0,4 s, analyse du bouclier 5–100 ms, aucun crash). Prochaine priorité : **contrôler à l'œil le repli de la carte Fiabilité et la pastille la prochaine fois que HyperOS coupe le bouclier**.
 
 ## ✅ Fait (v0.1 + v0.2)
 ### v0.1 initial
@@ -82,7 +82,8 @@ Principe : `AccessibilityService` qui lit l'écran d'Instagram (app officielle i
 - [x] **R7** (2026-11-06) Pastille rouge (`BadgedBox`) sur l'onglet Paramètres quand `ShieldKeepAlive.needsAttention` (bouclier voulu + `STOPPED_BY_SYSTEM`), état relu à chaque retour dans l'app + écoute accessibilité ; test unitaire. ⚠️ Non simulable sur émulateur (le système relance le service aussitôt ; `am force-stop` retire le service des réglages → état OFF) → à vérifier sur le Redmi
 - [x] **Bug jalons** (2026-11-06) Reculer la date « Sobre depuis » d'un domaine existant déclenchait une cascade de célébrations (1 jour, 3 jours…) : le remplissage « déjà vus » n'existait qu'à la création → `markPastMilestonesSeen` partagé par `create` et `update` (`AddictionRepositoryTest`). Vérifié sur émulateur
 - [x] **R8a** (2026-11-06) Faux positif de la pastille corrigé : l'écouteur d'accessibilité se déclenche avant qu'Android lie le service → `ShieldStatusEffect` relit l'état 2 s après chaque changement (Accueil + page Bouclier). Pastille vue à l'écran (rendu OK). Captures `docs/screenshots/` refaites (émulateur Pixel_7, mode démo, données fictives 47 j / 11 €), README à jour, version **1.2.0 (versionCode 5)**
-- [ ] **R8** Vérif Redmi (repli carte Fiabilité, pastille si HyperOS coupe le bouclier, temps d'ouverture de la base, « evaluation took N ms ») puis push + release v1.2.0
+- [x] **R8** (2026-11-07) Redmi : 1.2.0 debug installée par-dessus la 1.1 (données conservées), démarrage 402 ms, « evaluation took » 5–100 ms (dump diagnostic debug compris), bouclier toujours actif, aucun crash ; push + release v1.2.0
+- [ ] Contrôle visuel sur le Redmi : repli de la carte Fiabilité + pastille quand HyperOS coupe vraiment le bouclier (non fait : téléphone en cours d'utilisation)
 
 ## ⏳ Reste à faire
 - [ ] Voile de la célébration de jalon qui ne couvre pas le haut de l'écran (bande non assombrie sous la barre d'état)
