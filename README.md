@@ -19,12 +19,12 @@ Application Android de suivi de sobriété multi-addictions — compteur temps r
 ## Fonctionnalités
 
 - **Multi-addictions** — suivre plusieurs domaines en parallèle (tabac, alcool, sucre, écrans, etc.).
-- **Accueil épuré** — compteur de jours + heures/minutes, barre continue vers le prochain jalon avec pourcentage, engagement du jour, bouton « Respire ».
+- **Accueil épuré** — compteur de jours + heures/minutes, barre continue vers le prochain jalon avec pourcentage, engagement du jour.
 - **Journal** — entrées regroupées par semaine, recherche insensible aux accents, filtres humeur/envies, couleur selon l'humeur, swipe-to-dismiss avec confirmation.
 - **Statistiques** — série et record, économies (total et par jour), frise de jalons, calendrier mensuel sobre / journal / rechute, humeur et déclencheurs fréquents.
 - **Jalons animés** — 1/3/7/14/30/60/90/180/365 jours + célébration overlay quand un jalon tombe.
 - **Rechute + undo** — bouton direct sur la Home, snackbar d'annulation avec restauration des milestones.
-- **Panic button** — écran de crise dédié par addiction, avec raisons personnelles.
+- **Numéros d'écoute** — 3114 et Drogues Info Service accessibles depuis les Paramètres.
 - **Backup chiffré** — export/import JSON local, chiffrement AES-256/GCM + PBKDF2 (210k iters), passphrase utilisateur.
 - **SQLCipher** — base Room chiffrée, clé stockée dans `EncryptedSharedPreferences`.
 - **i18n** — FR/EN, sélecteur in-app (lit `LocalConfiguration.current`, jamais `Locale.getDefault()`).
