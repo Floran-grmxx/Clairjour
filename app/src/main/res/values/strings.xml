@@ -81,9 +81,6 @@
     <string name="journal_gratitude">Grateful for</string>
     <string name="journal_cravings">Had cravings today</string>
     <string name="journal_search">Search</string>
-    <string name="journal_week_current">This week</string>
-    <string name="journal_week_previous">Last week</string>
-    <string name="journal_week_of">Week of %1$s</string>
     <string name="cd_clear_search">Clear search</string>
 
     <!-- Stats -->
@@ -96,19 +93,13 @@
 
     <!-- Settings -->
     <string name="settings_title">Settings</string>
-    <string name="settings_language">Language</string>
-    <string name="settings_theme">Theme</string>
     <string name="settings_theme_system">System</string>
     <string name="settings_theme_light">Light</string>
     <string name="settings_theme_dark">Dark</string>
-    <string name="settings_notifications">Notifications</string>
     <string name="settings_notif_pledge">Morning pledge reminder</string>
     <string name="settings_notif_journal">Evening journal reminder</string>
-    <string name="settings_backup">Backup</string>
     <string name="settings_backup_export">Export to file</string>
     <string name="settings_backup_import">Import from file</string>
-    <string name="settings_addictions">Areas tracked</string>
-    <string name="settings_about">About</string>
 
     <!-- Notifications -->
     <string name="notif_channel_pledge_name">Morning pledge</string>
@@ -187,8 +178,6 @@
     <string name="crisis_title">Take a breath</string>
     <string name="crisis_intro">You\'re here because a craving hit. That\'s okay — it\'ll pass. Breathe with the circle, read your reasons, or reach out.</string>
     <string name="crisis_breathe">Breathe</string>
-    <string name="crisis_reasons_title">Your reasons</string>
-    <string name="crisis_contacts_title">Help lines (France)</string>
     <string name="crisis_contact_3114_label">3114 · National suicide-prevention line</string>
     <string name="crisis_contact_addiction_label">Drogues Info Service</string>
     <string name="crisis_call">Call</string>

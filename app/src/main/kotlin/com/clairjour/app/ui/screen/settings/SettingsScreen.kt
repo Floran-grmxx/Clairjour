@@ -52,6 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.clairjour.app.ui.components.ClairjourSwitch
+import com.clairjour.app.ui.components.HelplineList
 import com.clairjour.app.BuildConfig
 import com.clairjour.app.R
 import com.clairjour.app.data.AppContainer
@@ -163,7 +164,7 @@ fun SettingsScreen(
         Text(stringResource(R.string.settings_title), style = MaterialTheme.typography.headlineMedium)
         Spacer(Modifier.height(20.dp))
 
-        Section(title = stringResource(R.string.settings_language)) {
+        Section {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 AppLanguage.entries.forEach { lang ->
                     FilterChip(
@@ -186,7 +187,7 @@ fun SettingsScreen(
             }
         }
 
-        Section(title = stringResource(R.string.settings_theme)) {
+        Section {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 FilterChip(
                     selected = state.themeMode == ThemeMode.SYSTEM,
@@ -206,7 +207,7 @@ fun SettingsScreen(
             }
         }
 
-        Section(title = stringResource(R.string.settings_notifications)) {
+        Section {
             ToggleRow(
                 label = stringResource(R.string.settings_notif_pledge),
                 checked = state.notifPledgeEnabled,
@@ -248,7 +249,7 @@ fun SettingsScreen(
             }
         }
 
-        Section(title = stringResource(R.string.shield_title)) {
+        Section {
             Surface(
                 onClick = onOpenShield,
                 shape = RoundedCornerShape(12.dp),
@@ -275,7 +276,7 @@ fun SettingsScreen(
             }
         }
 
-        Section(title = stringResource(R.string.settings_backup)) {
+        Section {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.fillMaxWidth()
@@ -300,7 +301,7 @@ fun SettingsScreen(
             }
         }
 
-        Section(title = stringResource(R.string.settings_addictions)) {
+        Section {
             state.addictions.forEach { addiction ->
                 Surface(
                     onClick = { onEditAddiction(addiction.id) },
@@ -350,7 +351,11 @@ fun SettingsScreen(
             }
         }
 
-        Section(title = stringResource(R.string.settings_about)) {
+        Section {
+            HelplineList()
+        }
+
+        Section {
             Text(
                 "Clairjour · v${BuildConfig.VERSION_NAME}",
                 style = MaterialTheme.typography.bodyMedium,
@@ -363,14 +368,9 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun Section(title: String, content: @Composable () -> Unit) {
+private fun Section(content: @Composable () -> Unit) {
     Column(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Text(
-            title.uppercase(),
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.secondary
-        )
-        Spacer(Modifier.height(10.dp))
+        Spacer(Modifier.height(4.dp))
         content()
         Spacer(Modifier.height(6.dp))
         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)

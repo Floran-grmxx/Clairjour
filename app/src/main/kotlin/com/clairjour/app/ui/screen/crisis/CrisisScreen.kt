@@ -1,7 +1,5 @@
 package com.clairjour.app.ui.screen.crisis
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -12,7 +10,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,9 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.Phone
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -43,7 +37,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -67,7 +60,6 @@ fun CrisisScreen(
         }
     )
     val state by vm.state.collectAsState()
-    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -100,27 +92,12 @@ fun CrisisScreen(
             Spacer(Modifier.height(24.dp))
 
             if (state.reasons.isNotEmpty()) {
-                SectionTitle(stringResource(R.string.crisis_reasons_title))
                 state.reasons.forEach { reason ->
                     ReasonCard(reason)
                     Spacer(Modifier.height(8.dp))
                 }
                 Spacer(Modifier.height(16.dp))
             }
-
-            SectionTitle(stringResource(R.string.crisis_contacts_title))
-            EmergencyContact(
-                label = stringResource(R.string.crisis_contact_3114_label),
-                number = "3114",
-                context = context
-            )
-            Spacer(Modifier.height(8.dp))
-            EmergencyContact(
-                label = stringResource(R.string.crisis_contact_addiction_label),
-                number = "0800235236",
-                context = context
-            )
-            Spacer(Modifier.height(24.dp))
 
             Text(
                 stringResource(R.string.crisis_reminder),
@@ -131,16 +108,6 @@ fun CrisisScreen(
             )
         }
     }
-}
-
-@Composable
-private fun SectionTitle(text: String) {
-    Text(
-        text = text.uppercase(),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.secondary,
-        modifier = Modifier.padding(bottom = 8.dp)
-    )
 }
 
 @Composable
@@ -192,39 +159,5 @@ private fun ReasonCard(reason: String) {
             style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(16.dp)
         )
-    }
-}
-
-@Composable
-private fun EmergencyContact(label: String, number: String, context: android.content.Context) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(Modifier.weight(1f)) {
-            Text(label, style = MaterialTheme.typography.titleMedium)
-            Text(
-                number,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-        Button(
-            onClick = {
-                val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
-                context.startActivity(intent)
-            },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.secondary,
-                contentColor = MaterialTheme.colorScheme.onSecondary
-            )
-        ) {
-            Icon(Icons.Filled.Phone, contentDescription = null, modifier = Modifier.size(18.dp))
-            Spacer(Modifier.height(0.dp))
-            Text(
-                stringResource(R.string.crisis_call),
-                modifier = Modifier.padding(start = 6.dp)
-            )
-        }
     }
 }

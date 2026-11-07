@@ -60,14 +60,8 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringArrayResource
-import com.clairjour.app.domain.JournalBrowsing
 import com.clairjour.app.ui.theme.ClairjourSage
-import java.time.format.DateTimeFormatter
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 
 @Composable
 fun JournalScreen(
@@ -169,21 +163,16 @@ fun JournalScreen(
                     contentPadding = PaddingValues(start = 20.dp, end = 20.dp, top = 8.dp, bottom = 88.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    state.weeks.forEach { week ->
-                        item(key = week.monday.toString()) {
-                            WeekHeader(monday = week.monday)
-                        }
-                        items(week.entries, key = { it.id }) { entry ->
-                            SwipeableEntry(
-                                entry = entry,
-                                onClick = { onOpenEditor(entry.date) },
-                                onSwipedToDelete = {
-                                    // Guard against re-triggers when the state briefly
-                                    // transitions during LaunchedEffect reset.
-                                    if (pendingDeleteId == null) pendingDeleteId = entry.id
-                                }
-                            )
-                        }
+                    items(state.weeks.flatMap { it.entries }, key = { it.id }) { entry ->
+                        SwipeableEntry(
+                            entry = entry,
+                            onClick = { onOpenEditor(entry.date) },
+                            onSwipedToDelete = {
+                                // Guard against re-triggers when the state briefly
+                                // transitions during LaunchedEffect reset.
+                                if (pendingDeleteId == null) pendingDeleteId = entry.id
+                            }
+                        )
                     }
                 }
             }
@@ -261,30 +250,6 @@ private fun SwipeableEntry(
     ) {
         EntryRow(entry = entry, onClick = onClick)
     }
-}
-
-/** "This week", "Last week" or "Week of 19 Oct". */
-@Composable
-private fun WeekHeader(monday: LocalDate) {
-    val locale = LocalConfiguration.current.locales[0]
-    val thisMonday = JournalBrowsing.mondayOf(
-        Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).date
-    )
-    val label = when (thisMonday.toEpochDays() - monday.toEpochDays()) {
-        0 -> stringResource(R.string.journal_week_current)
-        7 -> stringResource(R.string.journal_week_previous)
-        else -> {
-            val formatter = remember(locale) { DateTimeFormatter.ofPattern("d MMM", locale) }
-            val javaMonday = java.time.LocalDate.of(monday.year, monday.monthNumber, monday.dayOfMonth)
-            stringResource(R.string.journal_week_of, javaMonday.format(formatter))
-        }
-    }
-    Text(
-        label.uppercase(locale),
-        style = MaterialTheme.typography.labelSmall,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(top = 8.dp)
-    )
 }
 
 /** Strip color by mood: low in red, neutral in gold, good in green. */
